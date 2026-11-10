@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Premium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       RESET Y CONFIGURACIÓN GLOBAL
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 20% 20%, #2C5364 0%, #203A43 45%, #0F2027 100%);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Esferas decorativas de fondo con blur */
+    body::before,
+    body::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 460px;
+      height: 460px;
+      background: #2C5364;
+      top: -140px;
+      left: -140px;
+      animation: floatOrb 14s ease-in-out infinite;
+    }
+
+    body::after {
+      width: 380px;
+      height: 380px;
+      background: #0084ff;
+      bottom: -120px;
+      right: -120px;
+      animation: floatOrb 17s ease-in-out infinite reverse;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(34px, -34px) scale(1.08); }
+    }
+
+    /* ============================================
+       TARJETA CENTRAL — BLANCO PREMIUM
+       ============================================ */
+    .login-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 430px;
+      padding: 52px 42px 44px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 18px;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.35),
+        0 12px 30px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes cardEntry {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Encabezado con logo (único lugar donde aparece iz.png) */
+    .header-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .header-logo img {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0, 132, 255, 0.35));
+      animation: logoFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    /* ============================================
+       CAMPOS DE ENTRADA — LIMPIOS Y CORPORATIVOS
+       ============================================ */
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 15px 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #334155;
+      background: #ffffff;
+      transition: all 0.3s ease;
+      outline: none;
+      letter-spacing: 0.2px;
+    }
+
+    /* Forzar mayúsculas visuales en el nombre */
+    #nombre {
+      text-transform: uppercase;
+    }
+
+    .input-wrap input::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+      text-transform: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: #0084ff;
+      box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.15);
+    }
+
+    .input-wrap input:focus::placeholder {
+      color: #cbd5e1;
+    }
+
+    /* Autofill de Chrome */
+    .input-wrap input:-webkit-autofill,
+    .input-wrap input:-webkit-autofill:hover,
+    .input-wrap input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #334155;
+      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* ============================================
+       BOTÓN PREMIUM INTERACTIVO
+       ============================================ */
+    .btn-ingresar {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0084ff 0%, #0066cc 100%);
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 22px rgba(0, 132, 255, 0.3);
+    }
+
+    /* Brillo deslizante */
+    .btn-ingresar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: left 0.6s ease;
+    }
+
+    .btn-ingresar:hover::before {
+      left: 100%;
+    }
+
+    .btn-ingresar:hover {
+      filter: brightness(0.92);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 132, 255, 0.45);
+    }
+
+    .btn-ingresar:active {
+      transform: translateY(0) scale(0.985);
+      box-shadow: 0 6px 18px rgba(0, 132, 255, 0.35);
+    }
+
+    /* ============================================
+       MENSAJE DE ERROR
+       ============================================ */
+    .error-msg {
+      display: none;
+      text-align: center;
+      color: #dc2626;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-top: 18px;
+      padding: 13px 16px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .error-msg.show {
+      display: block;
+      animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 40px 26px 34px;
+        border-radius: 16px;
+      }
+
+      .header-logo img {
+        width: 70px;
+        height: 70px;
+      }
+
+      .subtitle {
+        font-size: 0.75rem;
+        margin-bottom: 28px;
+      }
+
+      .input-wrap input {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="login-card">
+
+    <!-- Logo arriba (único lugar donde aparece iz.png) -->
+    <div class="header-logo">
+      <img src="iz.png" alt="Logo institucional">
+    </div>
+
+    <p class="subtitle">Sistema de Información de Formación Ministerial</p>
+
+    <form id="loginForm" novalidate>
+
+      <!-- Campo 1: Nombre Completo — limpio, sin icono, mayúsculas vía CSS -->
+      <div class="field">
+        <label for="nombre">Nombre Completo</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            placeholder="EJ: JUAN PEREZ"
+            autocomplete="name"
+            spellcheck="false"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Campo 2: Carnet de Identidad -->
+      <div class="field">
+        <label for="carnet">Carnet de Identidad</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="carnet"
+            name="carnet"
+            placeholder="Ingrese su carnet"
+            autocomplete="off"
+            inputmode="numeric"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Campo 3: Correo Electrónico -->
+      <div class="field">
+        <label for="correo">Correo Electrónico</label>
+        <div class="input-wrap">
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            placeholder="correo@ejemplo.com"
+            autocomplete="email"
+            spellcheck="false"
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Campo 4: Contraseña -->
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+      </div>
+
+      <button type="submit" class="btn-ingresar">Ingresar</button>
+
+      <div id="errorMsg" class="error-msg" role="alert" aria-live="assertive">
+        Datos incorrectos, intente de nuevo
+      </div>
+
+    </form>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ============================================
+         CREDENCIALES VÁLIDAS (comparación exacta)
+         ============================================ */
+      const CREDENCIALES = {
+        nombre:   'NAHUEL IGNACIO VELASQUEZ CABEZAS',
+        carnet:   '14240959',
+        correo:   'nacho123veca@gmail.com',
+        password: 'ATPNVECA'
+      };
+
+      /* ============================================
+         REFERENCIAS DEL DOM
+         ============================================ */
+      const form        = document.getElementById('loginForm');
+      const nombreInput = document.getElementById('nombre');
+      const carnetInput = document.getElementById('carnet');
+      const correoInput = document.getElementById('correo');
+      const passInput   = document.getElementById('password');
+      const errorMsg    = document.getElementById('errorMsg');
+
+      /* ============================================
+         FORZAR MAYÚSCULAS EN EL NOMBRE
+         (preserva la posición del cursor)
+         ============================================ */
+      nombreInput.addEventListener('input', function () {
+        const pos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(pos, pos);
+      });
+
+      /* ============================================
+         VALIDACIÓN AL ENVIAR
+         ============================================ */
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const nombre   = nombreInput.value.trim().toUpperCase();
+        const carnet   = carnetInput.value.trim();
+        const correo   = correoInput.value.trim();
+        const password = passInput.value;
+
+        const esValido =
+          nombre   === CREDENCIALES.nombre   &&
+          carnet   === CREDENCIALES.carnet   &&
+          correo   === CREDENCIALES.correo   &&
+          password === CREDENCIALES.password;
+
+        if (esValido) {
+          errorMsg.classList.remove('show');
+          window.location.href = 'index.html';
+        } else {
+          /* Reinicia la animación de sacudida */
+          errorMsg.classList.remove('show');
+          void errorMsg.offsetWidth;
+          errorMsg.classList.add('show');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

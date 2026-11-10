@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="description" content="Panel organizador educativo — Flat Edition con Estadística integrada.">
+  <title>Panel Organizador · Flat Edition · Estadística</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       1. TOKENS · COLORES PLANOS PUROS (CERO DEGRADADOS)
+       ============================================================ */
+    :root {
+      --bg:              #F8F9FA;
+      --bg-pure:         #FFFFFF;
+      --surface:         #FFFFFF;
+      --surface-2:       #F1F3F5;
+      --surface-3:       #E9ECEF;
+      --border-subtle:   #E3E6EA;
+      --border-soft:     #EDEFF2;
+
+      --blue:            #1A73E8;
+      --blue-deep:       #0D6EFD;
+      --blue-soft:       rgba(26, 115, 232, 0.10);
+      --blue-glow:       rgba(26, 115, 232, 0.28);
+      --blue-dim:        rgba(26, 115, 232, 0.06);
+
+      --red:             #FF003F;
+      --red-deep:        #E60026;
+      --red-soft:        rgba(255, 0, 63, 0.10);
+      --red-glow:        rgba(255, 0, 63, 0.30);
+      --red-dim:         rgba(255, 0, 63, 0.06);
+
+      --ink:             #1A1D21;
+      --ink-soft:        #495057;
+      --ink-muted:       #868E96;
+
+      --radius-card:     12px;
+      --radius-btn:      10px;
+      --radius-sm:       8px;
+      --gap:             20px;
+      --gap-lg:          24px;
+
+      --shadow-sm:       0 1px 2px rgba(16, 24, 40, 0.04),
+                         0 1px 3px rgba(16, 24, 40, 0.06);
+      --shadow-md:       0 4px 8px -2px rgba(16, 24, 40, 0.06),
+                         0 2px 6px -2px rgba(16, 24, 40, 0.04);
+      --shadow-lg:       0 12px 24px -6px rgba(16, 24, 40, 0.08),
+                         0 4px 8px -4px rgba(16, 24, 40, 0.05);
+
+      --ease:            cubic-bezier(0.25, 0.8, 0.25, 1);
+      --transition:      all 0.26s var(--ease);
+    }
+
+    /* ============================================================
+       2. RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 40px 32px 64px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    button { font-family: inherit; cursor: pointer; border: 0; background: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--red);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    /* ============================================================
+       3. ENCABEZADO
+       ============================================================ */
+    .page-header {
+      max-width: 1560px;
+      margin: 0 auto 36px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .page-header__mark {
+      width: 60px;
+      height: 60px;
+      display: grid;
+      place-items: center;
+      background: var(--blue-deep);
+      border-radius: 14px;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+      box-shadow: 0 6px 16px -6px rgba(13, 110, 253, 0.45);
+      transition: var(--transition);
+    }
+
+    .page-header__mark:hover { background: var(--red); transform: scale(1.04); }
+
+    .page-header__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .page-header__title span { color: var(--blue-deep); }
+
+    .page-header__subtitle {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       4. SPLIT SCREEN · 35% / 65%
+       ============================================================ */
+    .split {
+      max-width: 1560px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap-lg);
+      transition: grid-template-columns 0.5s var(--ease);
+      align-items: start;
+    }
+
+    .split.is-active {
+      grid-template-columns: minmax(300px, 35fr) minmax(0, 65fr);
+    }
+
+    /* ============================================================
+       5. PANEL IZQUIERDO
+       ============================================================ */
+    .menu-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      max-height: none;
+      overflow: visible;
+      transition: max-height 0.45s var(--ease), padding 0.45s var(--ease);
+    }
+
+    .split.is-active .menu-panel {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      padding-right: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--blue) var(--surface-3);
+    }
+
+    .split.is-active .menu-panel::-webkit-scrollbar { width: 8px; }
+    .split.is-active .menu-panel::-webkit-scrollbar-track { background: var(--surface-3); border-radius: 10px; }
+    .split.is-active .menu-panel::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 10px; }
+    .split.is-active .menu-panel::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+    /* ============================================================
+       6. GRID INTERNO DEL MENÚ
+       ============================================================ */
+    .dashboard { display: grid; grid-template-columns: 1fr; gap: var(--gap-lg); }
+
+    .split:not(.is-active) .dashboard {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2.1fr);
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "datos      central     asistencia  centralizador"
+        "material   material    material    centralizador";
+    }
+
+    .split:not(.is-active) .card--datos         { grid-area: datos; }
+    .split:not(.is-active) .card--central       { grid-area: central; }
+    .split:not(.is-active) .card--asistencia    { grid-area: asistencia; }
+    .split:not(.is-active) .card--material      { grid-area: material; }
+    .split:not(.is-active) .card--centralizador { grid-area: centralizador; }
+
+    /* ============================================================
+       7. TARJETAS
+       ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      transition: var(--transition);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card:hover { box-shadow: var(--shadow-lg); border-color: var(--border-soft); }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 16px; right: 16px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: var(--blue);
+    }
+
+    .card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .card__title::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px var(--blue-soft);
+    }
+
+    .card__stack { display: flex; flex-direction: column; gap: 12px; }
+
+    /* ============================================================
+       8. BOTONES
+       ============================================================ */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 18px 22px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-align: left;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-btn);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: var(--blue);
+      transition: width 0.26s var(--ease);
+    }
+
+    .btn::after {
+      content: '›';
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--blue);
+      opacity: 0.65;
+      transition: var(--transition);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .btn:hover {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--blue-deep);
+      transform: scale(1.01);
+    }
+
+    .btn:hover::before { width: 4px; }
+    .btn:hover::after { color: var(--red); opacity: 1; transform: translateX(4px); }
+    .btn:active { transform: scale(0.99); background: var(--blue-soft); }
+
+    .btn.is-selected {
+      background: var(--blue);
+      border-color: var(--blue-deep);
+      color: #FFFFFF;
+      font-weight: 700;
+      box-shadow: 0 6px 16px -4px var(--blue-glow);
+      transform: scale(1.02);
+    }
+
+    .btn.is-selected::before { width: 4px; background: var(--red); }
+    .btn.is-selected::after { color: #FFFFFF; opacity: 1; }
+
+    .btn--caratula {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--blue-deep);
+      font-weight: 700;
+      padding: 20px 22px;
+      animation: pulseFlat 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseFlat {
+      0%, 100% { box-shadow: 0 0 0 0 var(--blue-glow); }
+      50%      { box-shadow: 0 0 0 6px rgba(26, 115, 232, 0); }
+    }
+
+    .btn--caratula::before { content: '✦'; font-size: 0.95rem; margin-right: 4px; color: var(--red); }
+    .btn--caratula::after { color: var(--red); opacity: 1; }
+
+    .btn--caratula:hover {
+      background: var(--red);
+      color: #FFFFFF;
+      border-color: var(--red-deep);
+    }
+
+    .btn--caratula:hover::before,
+    .btn--caratula:hover::after { color: #FFFFFF; }
+
+    /* ============================================================
+       9. MATERIAL DE APOYO
+       ============================================================ */
+    .card--material .card__stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    /* ============================================================
+       10. CENTRALIZADOR TRIMESTRAL
+       ============================================================ */
+    .card--centralizador { gap: 22px; padding: 28px 24px; }
+
+    .trimestres {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .split.is-active .trimestres { grid-template-columns: 1fr; }
+
+    .trimestre {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+
+    .trimestre:hover { border-color: var(--blue); box-shadow: 0 4px 12px -4px var(--blue-glow); }
+
+    .trimestre__label {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue-deep);
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--blue);
+      margin-bottom: 6px;
+    }
+
+    .trimestre .btn { padding: 14px 18px; font-size: 0.78rem; background: var(--surface); white-space: nowrap; }
+
+    /* ============================================================
+       11. ÁREAS TÉCNICAS
+       ============================================================ */
+    .tecnicas {
+      margin-top: 6px;
+      padding: 20px 18px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tecnicas__label {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tecnicas__label::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+
+    .tecnicas__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .tecnicas .btn { padding: 16px 18px; background: var(--surface); }
+
+    /* ============================================================
+       12. PANEL DERECHO · CONTENIDO GIGANTE
+       ============================================================ */
+    .content-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 40px 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      min-height: 480px;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      pointer-events: none;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--blue) var(--surface-3);
+    }
+
+    .content-panel::-webkit-scrollbar { width: 8px; }
+    .content-panel::-webkit-scrollbar-track { background: var(--surface-3); border-radius: 10px; }
+    .content-panel::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 10px; }
+    .content-panel::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+    .content-panel.is-visible {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .content-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: var(--blue);
+    }
+
+    .content-panel__welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+      gap: 18px;
+      color: var(--ink-muted);
+    }
+
+    .content-panel__welcome-icon {
+      width: 88px; height: 88px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 2.2rem;
+      color: #FFFFFF;
+      background: var(--blue-deep);
+      box-shadow: 0 12px 32px -8px var(--blue-glow);
+      animation: pulseFlat 3s ease-in-out infinite;
+    }
+
+    .content-panel__welcome-title { font-family: 'Sora', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
+    .content-panel__welcome-text { font-size: 0.88rem; max-width: 360px; line-height: 1.7; color: var(--ink-muted); }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .content-panel__body { animation: slideInRight 0.5s var(--ease) forwards; }
+
+    .content-panel__header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      animation: fadeIn 0.6s var(--ease) 0.1s both;
+    }
+
+    .content-panel__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .content-panel__title::before {
+      content: '';
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 0 4px var(--blue-soft);
+      flex-shrink: 0;
+    }
+
+    .content-panel__subtitle {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      margin-top: 8px;
+      padding-left: 24px;
+    }
+
+    /* ============================================================
+       13. COMPONENTES INTERNOS
+       ============================================================ */
+    .lux-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.86rem;
+      animation: fadeIn 0.6s var(--ease) 0.2s both;
+    }
+
+    .lux-table thead th {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--blue-deep);
+      background: var(--surface-2);
+      padding: 16px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--blue);
+    }
+
+    .lux-table thead th:first-child { border-top-left-radius: 10px; }
+    .lux-table thead th:last-child  { border-top-right-radius: 10px; }
+
+    .lux-table tbody td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--ink-soft);
+      transition: var(--transition);
+    }
+
+    .lux-table tbody tr:hover td { background: var(--blue-dim); color: var(--ink); }
+    .lux-table tbody tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .badge--gold { background: var(--blue-soft); color: var(--blue-deep); border: 1px solid rgba(26, 115, 232, 0.25); }
+    .badge--ok   { background: rgba(40, 167, 69, 0.10); color: #1E7E34; border: 1px solid rgba(40, 167, 69, 0.30); }
+    .badge--warn { background: var(--red-soft); color: var(--red-deep); border: 1px solid rgba(255, 0, 63, 0.30); }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 100px repeat(5, 1fr);
+      gap: 8px;
+      font-size: 0.78rem;
+      animation: fadeIn 0.6s var(--ease) 0.2s both;
+    }
+
+    .schedule-grid__cell {
+      padding: 12px 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      color: var(--ink-soft);
+      transition: var(--transition);
+    }
+
+    .schedule-grid__cell--head {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--blue-dim);
+      border-color: var(--blue-soft);
+    }
+
+    .schedule-grid__cell--time {
+      font-weight: 700;
+      color: var(--red-deep);
+      background: var(--red-dim);
+      border-color: rgba(255, 0, 63, 0.15);
+    }
+
+    .schedule-grid__cell--subject { color: var(--ink); cursor: default; }
+    .schedule-grid__cell--subject:hover { border-color: var(--blue); box-shadow: 0 4px 12px -4px var(--blue-glow); transform: scale(1.02); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+      animation: fadeIn 0.6s var(--ease) 0.15s both;
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 22px 18px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: var(--blue);
+    }
+
+    .stat-card:hover { border-color: var(--blue); transform: scale(1.02); box-shadow: 0 8px 20px -6px var(--blue-glow); }
+
+    .stat-card__value { font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 800; line-height: 1.1; color: var(--blue-deep); }
+    .stat-card__label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; color: var(--ink-muted); margin-top: 8px; }
+
+    .progress-list { display: flex; flex-direction: column; gap: 18px; animation: fadeIn 0.6s var(--ease) 0.25s both; }
+    .progress-item__head { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 8px; color: var(--ink-soft); }
+    .progress-item__label { font-weight: 600; }
+    .progress-item__value { color: var(--blue-deep); font-weight: 700; }
+    .progress-bar { width: 100%; height: 8px; background: var(--surface-3); border-radius: 20px; overflow: hidden; }
+    .progress-bar__fill { height: 100%; background: var(--blue); border-radius: 20px; animation: growBar 1.2s var(--ease) forwards; width: 0; }
+
+    @keyframes growBar { to { width: var(--target-width); } }
+
+    .lux-form { display: flex; flex-direction: column; gap: 20px; animation: fadeIn 0.6s var(--ease) 0.2s both; }
+    .lux-form__group { display: flex; flex-direction: column; gap: 8px; }
+    .lux-form__label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--ink-soft); }
+
+    .lux-form__input,
+    .lux-form__select {
+      padding: 15px 18px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-btn);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      transition: var(--transition);
+    }
+
+    .lux-form__input:focus,
+    .lux-form__select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px var(--blue-soft);
+      background: var(--surface);
+    }
+
+    .lux-form__input::placeholder { color: var(--ink-muted); }
+
+    .lux-form__select {
+      cursor: pointer;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--blue) 50%),
+                        linear-gradient(135deg, var(--blue) 50%, transparent 50%);
+      background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .lux-form__actions { display: flex; gap: 12px; margin-top: 4px; }
+
+    .lux-btn {
+      padding: 14px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: var(--radius-btn);
+      transition: var(--transition);
+      border: 1.5px solid transparent;
+    }
+
+    .lux-btn--primary { background: var(--blue-deep); color: #FFFFFF; box-shadow: 0 6px 16px -4px var(--blue-glow); }
+    .lux-btn--primary:hover { background: var(--red); box-shadow: 0 8px 22px -4px var(--red-glow); transform: scale(1.02); }
+    .lux-btn--ghost { background: transparent; border-color: var(--border-subtle); color: var(--ink-soft); }
+    .lux-btn--ghost:hover { border-color: var(--red); color: var(--red-deep); background: var(--red-dim); }
+
+    .lux-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      padding: 80px 24px;
+      color: var(--ink-muted);
+      animation: fadeIn 0.6s var(--ease) 0.15s both;
+    }
+
+    .lux-placeholder__icon { font-size: 2.8rem; color: var(--blue); }
+    .lux-placeholder__text { font-size: 0.9rem; max-width: 320px; line-height: 1.7; }
+
+    .lux-section {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 26px;
+      margin-top: 24px;
+      position: relative;
+      animation: fadeIn 0.6s var(--ease) 0.3s both;
+    }
+
+    .lux-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 2px;
+      border-radius: 0 0 3px 3px;
+      background: var(--red);
+    }
+
+    .lux-section__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lux-section__title::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       14. CARÁTULA
+       ============================================================ */
+    .caratula-wrap { animation: fadeIn 0.5s var(--ease) 0.1s both; }
+
+    .caratula-frame {
+      border: 3px solid var(--red);
+      border-radius: 14px;
+      padding: 32px 36px 36px;
+      background: var(--bg-pure);
+      position: relative;
+      box-shadow: 0 8px 32px -8px rgba(255, 0, 63, 0.18);
+    }
+
+    .caratula-frame::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid var(--red-soft);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .caratula-logos {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      justify-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--red);
+      position: relative;
+      z-index: 1;
+    }
+
+    .caratula-logo {
+      height: 88px;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .caratula-title { text-align: center; margin-bottom: 8px; position: relative; z-index: 1; }
+
+    .caratula-title__main {
+      font-family: 'Sora', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .caratula-title__sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--red-deep);
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .caratula-center-logo {
+      display: flex;
+      justify-content: center;
+      margin: 28px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .caratula-center-logo img {
+      height: 140px;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 2px solid var(--blue-soft);
+      padding: 8px;
+      background: var(--surface);
+      box-shadow: 0 6px 20px -6px var(--blue-glow);
+    }
+
+    .caratula-table {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      position: relative;
+      z-index: 1;
+      border: 2px solid var(--ink);
+      background: var(--surface);
+    }
+
+    .caratula-table thead th {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #FFFFFF;
+      background: var(--blue-deep);
+      padding: 14px 18px;
+      text-align: left;
+      border: 1px solid var(--ink);
+    }
+
+    .caratula-table tbody td {
+      padding: 12px 18px;
+      border: 1px solid var(--border-subtle);
+      color: var(--ink);
+      font-weight: 500;
+      vertical-align: middle;
+      transition: background 0.2s var(--ease);
+    }
+
+    .caratula-table tbody tr:nth-child(even) td { background: var(--surface-2); }
+
+    .caratula-table tbody td.caratula-label {
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--blue-deep);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      width: 44%;
+    }
+
+    .caratula-table tbody td.caratula-value { font-weight: 600; color: var(--ink); }
+
+    .caratula-table tbody td.is-editing { padding: 6px 8px; background: var(--blue-dim) !important; }
+
+    .caratula-input {
+      width: 100%;
+      padding: 8px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1.5px solid var(--blue);
+      border-radius: 6px;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .caratula-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-soft); }
+
+    /* ============================================================
+       15. BOTONES DE ACCIÓN
+       ============================================================ */
+    .action-buttons-row {
+      display: flex;
+      gap: 14px;
+      margin: 22px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border-radius: var(--radius-btn);
+      border: 1.5px solid transparent;
+      transition: var(--transition);
+      color: #FFFFFF;
+    }
+
+    .action-btn--edit { background: var(--blue-deep); box-shadow: 0 6px 16px -4px var(--blue-glow); }
+    .action-btn--edit:hover { background: var(--blue); transform: scale(1.02); box-shadow: 0 8px 20px -4px var(--blue-glow); }
+
+    .action-btn--save { background: var(--red); box-shadow: 0 6px 16px -4px var(--red-glow); }
+    .action-btn--save:hover { background: var(--red-deep); transform: scale(1.02); box-shadow: 0 8px 20px -4px var(--red-glow); }
+
+    .action-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    .action-btn__icon { font-size: 1rem; line-height: 1; }
+
+    /* ============================================================
+       16. FILIACIÓN & PP.FF. & ESTADÍSTICA · ENCABEZADO
+       ============================================================ */
+    .filiacion-wrap { animation: fadeIn 0.5s var(--ease) 0.1s both; }
+
+    .filiacion-header {
+      background: var(--surface);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .filiacion-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: var(--red);
+    }
+
+    .filiacion-header__grid {
+      display: grid;
+      grid-template-columns: 96px 1fr 96px;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .filiacion-header__logo {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      padding: 6px;
+      display: block;
+    }
+
+    .filiacion-header__fono {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--red);
+      padding: 4px;
+      display: block;
+      box-shadow: 0 4px 12px -4px var(--red-glow);
+    }
+
+    .filiacion-header__center { text-align: center; }
+
+    .filiacion-header__school {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .filiacion-header__subtitle {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--red-deep);
+    }
+
+    .filiacion-header__data {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .filiacion-field {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .filiacion-field__label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    .filiacion-field__value {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    /* Barra de título de PP.FF. */
+    .ppff-title-bar {
+      background: var(--blue-deep);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px -4px var(--blue-glow);
+    }
+
+    /* ============================================================
+       17. TABLAS DE FILIACIÓN, PP.FF. Y ESTADÍSTICA
+       ============================================================ */
+    .filiacion-table-wrap,
+    .ppff-table-wrap,
+    .stats-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .filiacion-table,
+    .ppff-table,
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .filiacion-table thead,
+    .ppff-table thead,
+    .stats-table thead { background: var(--blue); }
+
+    .filiacion-table thead th,
+    .ppff-table thead th,
+    .stats-table thead th {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #FFFFFF;
+      padding: 12px 8px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+      line-height: 1.3;
+    }
+
+    .filiacion-table thead th:last-child,
+    .ppff-table thead th:last-child,
+    .stats-table thead th:last-child { border-right: none; }
+
+    .filiacion-table thead tr:first-child th,
+    .ppff-table thead tr:first-child th,
+    .stats-table thead tr:first-child th { border-bottom: 1px solid rgba(255, 255, 255, 0.18); }
+
+    .filiacion-table thead tr:nth-child(2) th,
+    .ppff-table thead tr:nth-child(2) th,
+    .stats-table thead tr:nth-child(2) th { background: var(--blue-deep); font-size: 0.62rem; padding: 8px 6px; }
+
+    .filiacion-table tbody td,
+    .ppff-table tbody td,
+    .stats-table tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+      color: var(--ink);
+      vertical-align: middle;
+      transition: background 0.2s var(--ease);
+    }
+
+    .filiacion-table tbody td:last-child,
+    .ppff-table tbody td:last-child,
+    .stats-table tbody td:last-child { border-right: none; }
+
+    .filiacion-table tbody tr:nth-child(even) td,
+    .ppff-table tbody tr:nth-child(even) td,
+    .stats-table tbody tr:nth-child(even) td { background: var(--surface-2); }
+
+    .filiacion-table tbody tr:hover td,
+    .ppff-table tbody tr:hover td,
+    .stats-table tbody tr:hover td { background: var(--blue-dim); }
+
+    .filiacion-table tbody td.cell-num,
+    .ppff-table tbody td.cell-num,
+    .stats-table tbody td.cell-num {
+      text-align: center;
+      font-weight: 700;
+      color: var(--blue-deep);
+      width: 38px;
+    }
+
+    .filiacion-table tbody td.cell-name,
+    .ppff-table tbody td.cell-name {
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .filiacion-table tbody td.cell-empty,
+    .ppff-table tbody td.cell-empty,
+    .stats-table tbody td.cell-empty { color: var(--ink-muted); }
+    
+    .cell-empty::before { content: '—'; opacity: 0.35; }
+
+    .filiacion-table tbody td.is-editing,
+    .ppff-table tbody td.is-editing,
+    .stats-table tbody td.is-editing {
+      padding: 4px 4px;
+      background: var(--blue-dim) !important;
+    }
+
+    .filiacion-input,
+    .ppff-input,
+    .stats-input {
+      width: 100%;
+      padding: 6px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1.5px solid var(--blue);
+      border-radius: 6px;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .filiacion-input:focus,
+    .ppff-input:focus,
+    .stats-input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-soft);
+    }
+
+    /* Ajustes específicos para tablas de estadística */
+    .stats-table tbody td.stats-label {
+      font-weight: 700;
+      color: var(--blue-deep);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    .stats-table tbody td.stats-sub-label {
+      font-weight: 600;
+      color: var(--ink);
+      padding-left: 16px;
+    }
+
+    .stats-table tbody tr.stats-total td {
+      background: var(--blue-soft) !important;
+      font-weight: 800;
+      color: var(--blue-deep);
+      border-top: 2px solid var(--blue);
+    }
+
+    /* ============================================================
+       18. TOAST
+       ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--red);
+      color: #FFFFFF;
+      padding: 16px 24px;
+      border-radius: var(--radius-btn);
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 12px 32px -8px rgba(255, 0, 63, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+      pointer-events: none;
+      max-width: 380px;
+    }
+
+    .toast.is-visible { opacity: 1; transform: translateY(0); }
+    .toast__icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    /* ============================================================
+       19. RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1180px) {
+      .split:not(.is-active) .dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+          "datos       central"
+          "asistencia  material"
+          "centralizador centralizador";
+      }
+      .filiacion-header__data { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+      .caratula-title__main { font-size: 1.7rem; }
+      .caratula-logos { gap: 12px; }
+      .caratula-logo { height: 68px; }
+      .caratula-center-logo img { height: 110px; }
+    }
+
+    @media (max-width: 980px) {
+      .split.is-active { grid-template-columns: 1fr; }
+      .split.is-active .menu-panel { max-height: 50vh; }
+      .content-panel { max-height: 70vh; }
+
+      .filiacion-header__grid { grid-template-columns: 72px 1fr 72px; gap: 14px; }
+      .filiacion-header__logo,
+      .filiacion-header__fono { width: 72px; height: 72px; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 24px 16px 48px; }
+
+      .page-header { flex-direction: column; align-items: flex-start; text-align: left; }
+      .page-header__title { font-size: 1.3rem; }
+
+      .split:not(.is-active) .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "datos" "central" "asistencia" "material" "centralizador";
+      }
+
+      .trimestres { grid-template-columns: 1fr; }
+      .tecnicas__grid { grid-template-columns: 1fr; }
+
+      .schedule-grid { grid-template-columns: 80px repeat(5, 1fr); font-size: 0.68rem; }
+
+      .content-panel { padding: 28px 18px; }
+      .content-panel__title { font-size: 1.15rem; }
+
+      .filiacion-header__data { grid-template-columns: 1fr; }
+      .filiacion-table-wrap,
+      .ppff-table-wrap,
+      .stats-table-wrap { overflow-x: auto; }
+      
+      .filiacion-table { min-width: 1100px; }
+      .ppff-table { min-width: 1400px; }
+      .stats-table { min-width: 1200px; }
+
+      .caratula-frame { padding: 20px 18px; }
+      .caratula-logos { grid-template-columns: 1fr; gap: 16px; }
+      .caratula-logo { height: 64px; }
+      .caratula-title__main { font-size: 1.35rem; }
+      .caratula-title__sub { font-size: 0.7rem; letter-spacing: 0.1em; }
+      .caratula-center-logo img { height: 100px; }
+      .caratula-table { font-size: 0.78rem; }
+      .caratula-table tbody td { padding: 10px 12px; }
+      .caratula-table tbody td.caratula-label { width: 40%; font-size: 0.72rem; }
+
+      .toast { left: 16px; right: 16px; bottom: 16px; }
+    }
+
+    /* ============================================================
+       20. ACCESIBILIDAD
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .btn:hover { transform: none; }
+      .btn:active { transform: none; }
+      .btn:hover::after { transform: none; }
+      .btn.is-selected { transform: none; }
+      .content-panel { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header class="page-header">
+    <div class="page-header__mark" aria-hidden="true">LUX</div>
+    <div>
+      <h1 class="page-header__title">Panel <span>Organizador</span></h1>
+      <p class="page-header__subtitle">Flat Edition · Azul &amp; Rojo Punzó Puros</p>
+    </div>
+  </header>
+
+  <!-- SPLIT SCREEN -->
+  <main class="split" id="splitContainer">
+
+    <!-- PANEL IZQUIERDO -->
+    <div class="menu-panel" id="menuPanel">
+      <div class="dashboard">
+
+        <section class="card card--datos" aria-labelledby="ttl-datos">
+          <h2 id="ttl-datos" class="card__title">Datos Generales</h2>
+          <div class="card__stack">
+            <button type="button" class="btn btn--caratula" data-section="caratula">Carátula</button>
+            <button type="button" class="btn" data-section="filiacion">Filiación</button>
+            <button type="button" class="btn" data-section="ppff">Datos de PP.FF.</button>
+            <button type="button" class="btn" data-section="horario">Horario</button>
+            <button type="button" class="btn" data-section="estadistica">Estadística</button>
+          </div>
+        </section>
+
+        <section class="card card--central" aria-labelledby="ttl-central">
+          <h2 id="ttl-central" class="card__title">Centralizadores</h2>
+          <div class="card__stack">
+            <button type="button" class="btn" data-section="trim1">1er Trimestre</button>
+            <button type="button" class="btn" data-section="trim2">2do Trimestre</button>
+            <button type="button" class="btn" data-section="trim3">3er Trimestre</button>
+            <button type="button" class="btn" data-section="anual">Anual</button>
+            <button type="button" class="btn" data-section="anual-notas">Anual Notas</button>
+          </div>
+        </section>
+
+        <section class="card card--asistencia" aria-labelledby="ttl-asistencia">
+          <h2 id="ttl-asistencia" class="card__title">Asistencia</h2>
+          <div class="card__stack">
+            <button type="button" class="btn" data-section="asist-t1">Primer Trimestre</button>
+            <button type="button" class="btn" data-section="asist-t2">Segundo Trimestre</button>
+            <button type="button" class="btn" data-section="asist-t3">Tercer Trimestre</button>
+          </div>
+        </section>
+
+        <section class="card card--material" aria-labelledby="ttl-material">
+          <h2 id="ttl-material" class="card__title">Material de Apoyo</h2>
+          <div class="card__stack">
+            <button type="button" class="btn" data-section="eval-comunitaria">Evaluación Comunitaria</button>
+            <button type="button" class="btn" data-section="cuadro-honor">Cuadro de Honor</button>
+            <button type="button" class="btn" data-section="boletin">Boletín</button>
+            <button type="button" class="btn" data-section="calendario">Calendario</button>
+          </div>
+        </section>
+
+        <section class="card card--centralizador" aria-labelledby="ttl-trimestral">
+          <h2 id="ttl-trimestral" class="card__title">Centralizador Trimestral de Notas por Áreas</h2>
+
+          <div class="trimestres">
+            <div class="trimestre">
+              <p class="trimestre__label">1er Trimestre</p>
+              <button type="button" class="btn" data-section="t1-lenguaje">Lenguaje</button>
+              <button type="button" class="btn" data-section="t1-matematica">Matemática</button>
+              <button type="button" class="btn" data-section="t1-naturales">C. Naturales</button>
+              <button type="button" class="btn" data-section="t1-sociales">C. Sociales</button>
+              <button type="button" class="btn" data-section="t1-plasticas">A. Plásticas</button>
+              <button type="button" class="btn" data-section="t1-tecnica">Técnica Téc.</button>
+              <button type="button" class="btn" data-section="t1-musical">E. Musical</button>
+            </div>
+
+            <div class="trimestre">
+              <p class="trimestre__label">2do Trimestre</p>
+              <button type="button" class="btn" data-section="t2-lenguaje">Lenguaje</button>
+              <button type="button" class="btn" data-section="t2-matematica">Matemática</button>
+              <button type="button" class="btn" data-section="t2-naturales">C. Naturales</button>
+              <button type="button" class="btn" data-section="t2-sociales">C. Sociales</button>
+              <button type="button" class="btn" data-section="t2-plasticas">A. Plásticas</button>
+              <button type="button" class="btn" data-section="t2-tecnica">Técnica Téc.</button>
+              <button type="button" class="btn" data-section="t2-musical">E. Musical</button>
+            </div>
+
+            <div class="trimestre">
+              <p class="trimestre__label">3er Trimestre</p>
+              <button type="button" class="btn" data-section="t3-lenguaje">Lenguaje</button>
+              <button type="button" class="btn" data-section="t3-matematica">Matemática</button>
+              <button type="button" class="btn" data-section="t3-naturales">C. Naturales</button>
+              <button type="button" class="btn" data-section="t3-sociales">C. Sociales</button>
+              <button type="button" class="btn" data-section="t3-plasticas">A. Plásticas</button>
+              <button type="button" class="btn" data-section="t3-tecnica">Técnica Téc.</button>
+              <button type="button" class="btn" data-section="t3-musical">E. Musical</button>
+            </div>
+          </div>
+
+          <div class="tecnicas">
+            <p class="tecnicas__label">Centralizador de Notas de Áreas Técnicas</p>
+            <div class="tecnicas__grid">
+              <button type="button" class="btn" data-section="efisica">E. Física</button>
+              <button type="button" class="btn" data-section="religion">Religión</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <aside class="content-panel" id="contentPanel" aria-live="polite">
+      <div class="content-panel__welcome" id="welcomeState">
+        <div class="content-panel__welcome-icon" aria-hidden="true">✦</div>
+        <p class="content-panel__welcome-title">Seleccione una sección</p>
+        <p class="content-panel__welcome-text">
+          Elija cualquier opción del panel izquierdo para visualizar su contenido detallado en esta área ampliada.
+        </p>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast__icon">✓</span>
+    <span id="toastMessage">Registros guardados con éxito.</span>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* ============================================================
+         REFERENCIAS DOM
+         ============================================================ */
+      const splitContainer = document.getElementById('splitContainer');
+      const contentPanel   = document.getElementById('contentPanel');
+      const welcomeState   = document.getElementById('welcomeState');
+      const allButtons     = document.querySelectorAll('.btn[data-section]');
+      const toast          = document.getElementById('toast');
+      const toastMessage   = document.getElementById('toastMessage');
+
+      /* ============================================================
+         ESTADO GLOBAL MUTABLE · DATOS INSTITUCIONALES
+         ============================================================ */
+      const DATOS_INSTITUCIONALES = {
+        departamento:  'ORURO',
+        distrito:      'ORURO',
+        red:           '',
+        codigoSIE:     '81230287',
+        unidad:        'TOMAS BARRON 2',
+        turno:         'TARDE',
+        nivel:         'PRIMARIA COMUNITARIA VOCACIONAL',
+        directora:     'LIC. ROXANA M. MACHICADO CHECA',
+        profesora:     'BETTY ROMERO LEAÑO',
+        anioEscolar:   'PRIMERO',
+        paralelo:      'A',
+        gestion:       '2025',
+        colegio:       'Colegio España',
+      };
+
+      /* ============================================================
+         NÓMINA DE 31 ESTUDIANTES
+         ============================================================ */
+      const ESTUDIANTES_RAW = [
+        'ADRIAN MEDINA YARAIS SHARLETH',
+        'AGUILAR BALLESTEROS KALI JOQUIN',
+        'APAZA APAZA REBECA',
+        'CADIMA CARATA KER ABDIEL',
+        'CALIZAYA ABECIA YELENA ITZEL',
+        'CAPRILDO RODRIGO KENDALIS ABNEY',
+        'CAYO SALASQUIPE AARON',
+        'CLAROS LOPEZ NAYVELT NICOLE',
+        'COAQUIRA COAQUIRA MAVERICK BRAYDEM',
+        'CUZARA HINOJOSA MILENCA SHIRLEY',
+        'FLORES MAMANI ANTONY RAUL',
+        'FRANCO COSTAS BRITTANY ANTONELLA',
+        'GIL REA JEAN FERNANDO',
+        'GUZMAN ELIAS LUCY GABRIELA',
+        'HUARACHI ALCALA ARLET JOCABED',
+        'LLANQUE CASTRO KAROLY NICOLAS',
+        'LOPEZ MAMANI DILSON THIAGO',
+        'LOPEZ TAPIA AZURE',
+        'LUBY MAMANI DILAN JOEL',
+        'MAMANI CATARI JOSE PAULO',
+        'MAMANI MAMANI ALICE ZUEMI',
+        'MAMANI VIDEZ PATRICK',
+        'NINA MEJIA AMIR CALEB',
+        'ORELLANA VERA MARIANA ANTONELLA',
+        'POMA CHAMBI MARCELO GADIEL',
+        'QUENA AYMAYA BRIANNA GABRIELA',
+        'QUESO CONDORI MAYCOL JOEL',
+        'QUSPE AGUILAR EFRICK EMMANUEL',
+        'QUSPE TICONA CALEB GABRIEL',
+        'RAMIREZ PEREZ SAMUEL MATIAS',
+        'RAMOS CORTEZ AXEL',
+      ];
+
+      function parseEstudiante(raw) {
+        const parts = raw.trim().split(/\s+/);
+        if (parts.length >= 3) {
+          return { paterno: parts[0], materno: parts[1], nombres: parts.slice(2).join(' ') };
+        }
+        if (parts.length === 2) {
+          return { paterno: parts[0], materno: parts[1], nombres: '' };
+        }
+        return { paterno: parts[0] || '', materno: '', nombres: '' };
+      }
+
+      const ESTUDIANTES = ESTUDIANTES_RAW.map(parseEstudiante);
+
+      /* ============================================================
+         GENERADORES BASE
+         ============================================================ */
+      function buildTable(headers, rows) {
+        const thead = headers.map(h => `<th>${h}</th>`).join('');
+        const tbody = rows.map(row => {
+          const cells = row.map(c => `<td>${c}</td>`).join('');
+          return `<tr>${cells}</tr>`;
+        }).join('');
+        return `<table class="lux-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>`;
+      }
+
+      function buildStats(items) {
+        const cards = items.map(it => `
+          <div class="stat-card">
+            <div class="stat-card__value">${it.value}</div>
+            <div class="stat-card__label">${it.label}</div>
+          </div>`).join('');
+        return `<div class="stats-grid">${cards}</div>`;
+      }
+
+      function buildProgress(items) {
+        const rows = items.map(it => `
+          <div class="progress-item">
+            <div class="progress-item__head">
+              <span class="progress-item__label">${it.label}</span>
+              <span class="progress-item__value">${it.value}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="--target-width:${it.value}%"></div>
+            </div>
+          </div>`).join('');
+        return `<div class="progress-list">${rows}</div>`;
+      }
+
+      function buildSchedule() {
+        const days = ['Hora', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
+        const rows = [
+          ['07:30', 'Matemática', 'Lenguaje', 'C. Sociales', 'C. Naturales', 'E. Física'],
+          ['08:20', 'Lenguaje', 'Matemática', 'C. Naturales', 'C. Sociales', 'Religión'],
+          ['09:10', 'C. Sociales', 'C. Naturales', 'Matemática', 'Lenguaje', 'A. Plásticas'],
+          ['10:00', 'RECREO', 'RECREO', 'RECREO', 'RECREO', 'RECREO'],
+          ['10:20', 'C. Naturales', 'E. Musical', 'Lenguaje', 'Matemática', 'Técnica'],
+          ['11:10', 'E. Física', 'A. Plásticas', 'C. Sociales', 'Técnica', 'C. Naturales'],
+          ['12:00', 'Religión', 'Técnica', 'E. Musical', 'E. Física', 'Matemática'],
+        ];
+
+        const header = days.map(d => `<div class="schedule-grid__cell schedule-grid__cell--head">${d}</div>`).join('');
+        const body = rows.map(r => {
+          const timeCell = `<div class="schedule-grid__cell schedule-grid__cell--time">${r[0]}</div>`;
+          const subjects = r.slice(1).map(s => {
+            if (s === 'RECREO') {
+              return `<div class="schedule-grid__cell schedule-grid__cell--subject" style="color:var(--red-deep);font-weight:700;">${s}</div>`;
+            }
+            return `<div class="schedule-grid__cell schedule-grid__cell--subject">${s}</div>`;
+          }).join('');
+          return timeCell + subjects;
+        }).join('');
+
+        return `<div class="schedule-grid">${header}${body}</div>`;
+      }
+
+      function buildForm(fields) {
+        const fieldsHTML = fields.map(f => {
+          if (f.type === 'select') {
+            const opts = f.options.map(o => `<option>${o}</option>`).join('');
+            return `
+              <div class="lux-form__group">
+                <label class="lux-form__label">${f.label}</label>
+                <select class="lux-form__select">${opts}</select>
+              </div>`;
+          }
+          return `
+            <div class="lux-form__group">
+              <label class="lux-form__label">${f.label}</label>
+              <input class="lux-form__input" type="${f.type || 'text'}" placeholder="${f.placeholder || ''}">
+            </div>`;
+        }).join('');
+
+        return `
+          <form class="lux-form" onsubmit="event.preventDefault();">
+            ${fieldsHTML}
+            <div class="lux-form__actions">
+              <button type="submit" class="lux-btn lux-btn--primary">Guardar</button>
+              <button type="reset" class="lux-btn lux-btn--ghost">Cancelar</button>
+            </div>
+          </form>`;
+      }
+
+      function buildPlaceholder(icon, text) {
+        return `
+          <div class="lux-placeholder">
+            <div class="lux-placeholder__icon">${icon}</div>
+            <p class="lux-placeholder__text">${text}</p>
+          </div>`;
+      }
+
+      function buildSection(title, inner) {
+        return `
+          <div class="lux-section">
+            <div class="lux-section__title">${title}</div>
+            ${inner}
+          </div>`;
+      }
+
+      /* ============================================================
+         CARÁTULA
+         ============================================================ */
+      function buildCaratulaView() {
+        return {
+          title: 'Carátula Institucional',
+          subtitle: 'Portada oficial del expediente académico',
+          body: `
+            <div class="caratula-wrap">
+              <div class="caratula-frame">
+                <div class="caratula-logos">
+                  <img src="iz.png"  alt="Logo Ministerio de Educación" class="caratula-logo">
+                  <img src="med.png" alt="Escudo Distrital"                class="caratula-logo">
+                  <img src="der.png" alt="Dirección Departamental"         class="caratula-logo">
+                </div>
+
+                <div class="caratula-title">
+                  <h2 class="caratula-title__main">Cuaderno Pedagógico</h2>
+                  <p class="caratula-title__sub">Instrumento de Evaluación, Seguimiento y Comunicación</p>
+                </div>
+
+                <div class="caratula-center-logo">
+                  <img src="logo.jpg" alt="Escudo de la Unidad Educativa Tomas Barron 2">
+                </div>
+
+                <table class="caratula-table" id="caratulaTable">
+                  <thead>
+                    <tr><th>Campo</th><th>Información</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="caratula-label">Departamento</td><td class="caratula-value" data-field="departamento">${DATOS_INSTITUCIONALES.departamento}</td></tr>
+                    <tr><td class="caratula-label">Distrito Educ.</td><td class="caratula-value" data-field="distrito">${DATOS_INSTITUCIONALES.distrito}</td></tr>
+                    <tr><td class="caratula-label">Red</td><td class="caratula-value" data-field="red">${DATOS_INSTITUCIONALES.red || '—'}</td></tr>
+                    <tr><td class="caratula-label">Código SIE</td><td class="caratula-value" data-field="codigoSIE">${DATOS_INSTITUCIONALES.codigoSIE}</td></tr>
+                    <tr><td class="caratula-label">Unidad Educativa</td><td class="caratula-value" data-field="unidad">${DATOS_INSTITUCIONALES.unidad}</td></tr>
+                    <tr><td class="caratula-label">Turno</td><td class="caratula-value" data-field="turno">${DATOS_INSTITUCIONALES.turno}</td></tr>
+                    <tr><td class="caratula-label">Nivel</td><td class="caratula-value" data-field="nivel">${DATOS_INSTITUCIONALES.nivel}</td></tr>
+                    <tr><td class="caratula-label">Directora</td><td class="caratula-value" data-field="directora">${DATOS_INSTITUCIONALES.directora}</td></tr>
+                    <tr><td class="caratula-label">Profesora</td><td class="caratula-value" data-field="profesora">${DATOS_INSTITUCIONALES.profesora}</td></tr>
+                    <tr><td class="caratula-label">Año de Escolaridad</td><td class="caratula-value" data-field="anioEscolar">${DATOS_INSTITUCIONALES.anioEscolar}</td></tr>
+                    <tr><td class="caratula-label">Paralelo</td><td class="caratula-value" data-field="paralelo">${DATOS_INSTITUCIONALES.paralelo}</td></tr>
+                    <tr><td class="caratula-label">Gestión</td><td class="caratula-value" data-field="gestion">${DATOS_INSTITUCIONALES.gestion}</td></tr>
+                  </tbody>
+                </table>
+
+                <div class="action-buttons-row">
+                  <button type="button" class="action-btn action-btn--edit" id="btnEditCaratula">
+                    <span class="action-btn__icon">✎</span> Editar
+                  </button>
+                  <button type="button" class="action-btn action-btn--save" id="btnSaveCaratula" disabled>
+                    <span class="action-btn__icon">💾</span> Guardar Datos
+                  </button>
+                </div>
+              </div>
+            </div>
+          `,
+        };
+      }
+
+      function enableCaratulaEditMode() {
+        const table = document.getElementById('caratulaTable');
+        if (!table) return;
+
+        const valueCells = table.querySelectorAll('tbody td.caratula-value');
+        valueCells.forEach(td => {
+          const field = td.dataset.field;
+          const currentValue = td.textContent.trim() === '—' ? '' : td.textContent.trim();
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'caratula-input';
+          input.value = currentValue;
+          input.dataset.field = field;
+          input.placeholder = field === 'red' ? 'Opcional' : '';
+
+          td.textContent = '';
+          td.appendChild(input);
+          td.classList.add('is-editing');
+        });
+
+        document.getElementById('btnEditCaratula').disabled = true;
+        document.getElementById('btnSaveCaratula').disabled = false;
+        table.querySelector('.caratula-input')?.focus();
+        showToast('Modo edición activado. Modifique los datos institucionales.', 'info');
+      }
+
+      function saveCaratulaEditMode() {
+        const table = document.getElementById('caratulaTable');
+        if (!table) return;
+
+        const inputs = table.querySelectorAll('.caratula-input');
+        inputs.forEach(input => {
+          const td = input.closest('td');
+          const field = input.dataset.field;
+          const value = input.value.trim();
+
+          DATOS_INSTITUCIONALES[field] = value;
+          td.textContent = value || '—';
+          td.classList.remove('is-editing');
+        });
+
+        document.getElementById('btnEditCaratula').disabled = false;
+        document.getElementById('btnSaveCaratula').disabled = true;
+        showToast('¡Datos institucionales actualizados y guardados con éxito!', 'success');
+      }
+
+      function bindCaratulaEvents() {
+        document.getElementById('btnEditCaratula')?.addEventListener('click', enableCaratulaEditMode);
+        document.getElementById('btnSaveCaratula')?.addEventListener('click', saveCaratulaEditMode);
+      }
+
+      /* ============================================================
+         FILIACIÓN
+         ============================================================ */
+      function buildFiliacionHeader() {
+        return `
+          <div class="filiacion-header">
+            <div class="filiacion-header__grid">
+              <div></div>
+              <div class="filiacion-header__center">
+                <h3 class="filiacion-header__school">${DATOS_INSTITUCIONALES.colegio}</h3>
+                <p class="filiacion-header__subtitle">Cuadro de Filiación del Estudiante</p>
+              </div>
+              <img src="logo.jpg" alt="Foto institucional" class="filiacion-header__fono" loading="lazy">
+            </div>
+
+            <div class="filiacion-header__data">
+              <div class="filiacion-field"><span class="filiacion-field__label">Unidad Educativa</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.unidad}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Docente</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.profesora}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Nivel</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.nivel}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Turno</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.turno}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Curso</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.anioEscolar}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Paralelo</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.paralelo}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Gestión</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.gestion}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Total Estudiantes</span><span class="filiacion-field__value">${ESTUDIANTES.length}</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildFiliacionTable() {
+        const rows = ESTUDIANTES.map((est, i) => `
+          <tr data-row="${i}">
+            <td class="cell-num">${String(i + 1).padStart(2, '0')}</td>
+            <td class="cell-name" data-field="paterno">${est.paterno}</td>
+            <td class="cell-name" data-field="materno">${est.materno}</td>
+            <td class="cell-name" data-field="nombres">${est.nombres}</td>
+            <td class="cell-empty" data-field="sexo"></td>
+            <td class="cell-empty" data-field="lugar"></td>
+            <td class="cell-empty" data-field="fecha"></td>
+            <td class="cell-empty" data-field="edad"></td>
+            <td class="cell-empty" data-field="ci"></td>
+            <td class="cell-empty" data-field="rude"></td>
+            <td class="cell-empty" data-field="telefono"></td>
+          </tr>
+        `).join('');
+
+        return `
+          <div class="filiacion-table-wrap">
+            <table class="filiacion-table" id="filiacionTable">
+              <thead>
+                <tr>
+                  <th rowspan="2">N°</th>
+                  <th colspan="3">Nómina de Estudiantes</th>
+                  <th rowspan="2">Sexo</th>
+                  <th rowspan="2">Lugar de<br>Nacimiento</th>
+                  <th rowspan="2">Fecha de<br>Nacimiento</th>
+                  <th rowspan="2">Edad</th>
+                  <th rowspan="2">C.I.</th>
+                  <th rowspan="2">Código<br>RUDE</th>
+                  <th rowspan="2">Teléfono<br>o Celular</th>
+                </tr>
+                <tr>
+                  <th>Paterno</th><th>Materno</th><th>Nombres</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function buildFiliacionActions() {
+        return `
+          <div class="action-buttons-row">
+            <button type="button" class="action-btn action-btn--edit" id="btnEditFiliacion">
+              <span class="action-btn__icon">✎</span> Editar
+            </button>
+            <button type="button" class="action-btn action-btn--save" id="btnSaveFiliacion" disabled>
+              <span class="action-btn__icon">💾</span> Guardar Datos
+            </button>
+          </div>
+        `;
+      }
+
+      function buildFiliacionView() {
+        return {
+          title: 'Cuadro de Filiación del Estudiante',
+          subtitle: 'Nómina oficial · Datos institucionales sincronizados con Carátula',
+          body: `
+            <div class="filiacion-wrap">
+              ${buildFiliacionHeader()}
+              ${buildFiliacionActions()}
+              ${buildFiliacionTable()}
+            </div>
+          `,
+        };
+      }
+
+      function enableFiliacionEditMode() {
+        const table = document.getElementById('filiacionTable');
+        if (!table) return;
+
+        const editableCells = table.querySelectorAll('tbody td:not(.cell-num)');
+        editableCells.forEach(td => {
+          const field = td.dataset.field;
+          const currentValue = td.textContent.trim();
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'filiacion-input';
+          input.value = currentValue;
+          input.dataset.field = field;
+          input.placeholder =
+            field === 'sexo'     ? 'M/F' :
+            field === 'fecha'    ? 'DD/MM/AA' :
+            field === 'ci'       ? 'C.I.' :
+            field === 'rude'     ? 'RUDE' :
+            field === 'telefono' ? 'Teléfono' :
+            field === 'edad'     ? 'Edad' :
+            field === 'lugar'    ? 'Lugar' : '';
+
+          td.textContent = '';
+          td.appendChild(input);
+          td.classList.add('is-editing');
+          td.classList.remove('cell-empty');
+        });
+
+        document.getElementById('btnEditFiliacion').disabled = true;
+        document.getElementById('btnSaveFiliacion').disabled = false;
+        table.querySelector('.filiacion-input')?.focus();
+        showToast('Modo edición activado. Complete los datos de la nómina.', 'info');
+      }
+
+      function saveFiliacionEditMode() {
+        const table = document.getElementById('filiacionTable');
+        if (!table) return;
+
+        const inputs = table.querySelectorAll('.filiacion-input');
+        inputs.forEach(input => {
+          const td = input.closest('td');
+          const value = input.value.trim();
+
+          td.textContent = value;
+          td.classList.remove('is-editing');
+          if (value === '') td.classList.add('cell-empty');
+          else td.classList.remove('cell-empty');
+        });
+
+        document.getElementById('btnEditFiliacion').disabled = false;
+        document.getElementById('btnSaveFiliacion').disabled = true;
+        showToast('¡Registros de la nómina guardados con éxito!', 'success');
+      }
+
+      function bindFiliacionEvents() {
+        document.getElementById('btnEditFiliacion')?.addEventListener('click', enableFiliacionEditMode);
+        document.getElementById('btnSaveFiliacion')?.addEventListener('click', saveFiliacionEditMode);
+      }
+
+      /* ============================================================
+         DATOS DE PP.FF.
+         ============================================================ */
+      function buildPPFFHeader() {
+        return `
+          <div class="filiacion-header">
+            <div class="filiacion-header__grid">
+              <div></div>
+              <div class="filiacion-header__center">
+                <h3 class="filiacion-header__school">${DATOS_INSTITUCIONALES.colegio}</h3>
+                <p class="filiacion-header__subtitle">Cuaderno de Filiación de Padres de Familia</p>
+              </div>
+              <img src="logo.jpg" alt="Escudo institucional" class="filiacion-header__fono" loading="lazy">
+            </div>
+
+            <div class="filiacion-header__data">
+              <div class="filiacion-field"><span class="filiacion-field__label">Unidad Educativa</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.unidad}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Docente</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.profesora}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Nivel</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.nivel}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Turno</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.turno}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Curso</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.anioEscolar}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Paralelo</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.paralelo}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Gestión</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.gestion}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Total Estudiantes</span><span class="filiacion-field__value">${ESTUDIANTES.length}</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildPPFFTable() {
+        const rows = ESTUDIANTES.map((est, i) => `
+          <tr data-row="${i}">
+            <td class="cell-num">${String(i + 1).padStart(2, '0')}</td>
+            <td class="cell-name" data-field="paterno">${est.paterno}</td>
+            <td class="cell-name" data-field="materno">${est.materno}</td>
+            <td class="cell-name" data-field="nombres">${est.nombres}</td>
+            <td class="cell-empty" data-field="padre_nombre"></td>
+            <td class="cell-empty" data-field="padre_ocupacion"></td>
+            <td class="cell-empty" data-field="padre_telefono"></td>
+            <td class="cell-empty" data-field="madre_nombre"></td>
+            <td class="cell-empty" data-field="madre_ocupacion"></td>
+            <td class="cell-empty" data-field="madre_telefono"></td>
+            <td class="cell-empty" data-field="direccion"></td>
+          </tr>
+        `).join('');
+
+        return `
+          <div class="ppff-table-wrap">
+            <table class="ppff-table" id="ppffTable">
+              <thead>
+                <tr>
+                  <th rowspan="2">N°</th>
+                  <th colspan="3">Nómina de Estudiantes</th>
+                  <th colspan="3">Padre de Familia</th>
+                  <th colspan="3">Madre de Familia</th>
+                  <th rowspan="2">Dirección</th>
+                </tr>
+                <tr>
+                  <th>Paterno</th><th>Materno</th><th>Nombres</th>
+                  <th>Nombres</th><th>Ocupación</th><th>Teléfono/Cel.</th>
+                  <th>Nombres</th><th>Ocupación</th><th>Teléfono/Cel.</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function buildPPFFActions() {
+        return `
+          <div class="action-buttons-row">
+            <button type="button" class="action-btn action-btn--edit" id="btnEditPPFF">
+              <span class="action-btn__icon">✎</span> Editar
+            </button>
+            <button type="button" class="action-btn action-btn--save" id="btnSavePPFF" disabled>
+              <span class="action-btn__icon">💾</span> Guardar Datos
+            </button>
+          </div>
+        `;
+      }
+
+      function buildPPFFView() {
+        return {
+          title: 'Cuaderno de Filiación de Padres de Familia',
+          subtitle: 'Registro de tutores y contactos por estudiante',
+          body: `
+            <div class="filiacion-wrap">
+              ${buildPPFFHeader()}
+              <div class="ppff-title-bar">Cuaderno de Filiación de Padres de Familia</div>
+              ${buildPPFFActions()}
+              ${buildPPFFTable()}
+            </div>
+          `,
+        };
+      }
+
+      function enablePPFFEditMode() {
+        const table = document.getElementById('ppffTable');
+        if (!table) return;
+
+        const editableCells = table.querySelectorAll('tbody td:not(.cell-num):not(.cell-name)');
+        editableCells.forEach(td => {
+          const field = td.dataset.field;
+          const currentValue = td.textContent.trim();
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'ppff-input';
+          input.value = currentValue;
+          input.dataset.field = field;
+          input.placeholder =
+            field.includes('nombre')    ? 'Nombre completo' :
+            field.includes('ocupacion') ? 'Ocupación' :
+            field.includes('telefono')  ? 'Teléfono' :
+            field === 'direccion'       ? 'Domicilio' : '';
+
+          td.textContent = '';
+          td.appendChild(input);
+          td.classList.add('is-editing');
+          td.classList.remove('cell-empty');
+        });
+
+        document.getElementById('btnEditPPFF').disabled = true;
+        document.getElementById('btnSavePPFF').disabled = false;
+        table.querySelector('.ppff-input')?.focus();
+        showToast('Modo edición activado. Complete los datos de los padres.', 'info');
+      }
+
+      function savePPFFEditMode() {
+        const table = document.getElementById('ppffTable');
+        if (!table) return;
+
+        const inputs = table.querySelectorAll('.ppff-input');
+        inputs.forEach(input => {
+          const td = input.closest('td');
+          const value = input.value.trim();
+
+          td.textContent = value;
+          td.classList.remove('is-editing');
+          if (value === '') td.classList.add('cell-empty');
+          else td.classList.remove('cell-empty');
+        });
+
+        document.getElementById('btnEditPPFF').disabled = false;
+        document.getElementById('btnSavePPFF').disabled = true;
+        showToast('¡Registros de los padres de familia guardados con éxito!', 'success');
+      }
+
+      function bindPPFFEvents() {
+        document.getElementById('btnEditPPFF')?.addEventListener('click', enablePPFFEditMode);
+        document.getElementById('btnSavePPFF')?.addEventListener('click', savePPFFEditMode);
+      }
+
+      /* ============================================================
+         ESTADÍSTICA
+         ============================================================ */
+      function buildEstadisticaHeader() {
+        return `
+          <div class="filiacion-header">
+            <div class="filiacion-header__grid">
+              <div></div> <!-- Espacio para centrar -->
+              <div class="filiacion-header__center">
+                <h3 class="filiacion-header__school">${DATOS_INSTITUCIONALES.colegio}</h3>
+                <p class="filiacion-header__subtitle">Cuadro Estadístico Institucional</p>
+              </div>
+              <img src="logo.jpg" alt="Escudo institucional" class="filiacion-header__fono" loading="lazy">
+            </div>
+
+            <div class="filiacion-header__data">
+              <div class="filiacion-field"><span class="filiacion-field__label">Unidad Educativa</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.unidad}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Docente</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.profesora}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Nivel</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.nivel}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Turno</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.turno}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Curso</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.anioEscolar}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Paralelo</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.paralelo}</span></div>
+              <div class="filiacion-field"><span class="filiacion-field__label">Gestión</span><span class="filiacion-field__value">${DATOS_INSTITUCIONALES.gestion}</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildEstadisticaTables() {
+        return `
+          <!-- Tabla 1: Matrícula -->
+          <div class="lux-section">
+            <div class="lux-section__title">A) Cuadro Trimestral de Matrícula</div>
+            <div class="stats-table-wrap" style="margin-top: 15px;">
+              <table class="stats-table" id="statsTable1">
+                <thead>
+                  <tr>
+                    <th rowspan="2" style="width: 180px;">TRIMESTRES</th>
+                    <th colspan="4">INSCRITOS</th>
+                    <th colspan="4">INGRESO TRASLADO</th>
+                    <th colspan="4">RETIRO TRASLADO</th>
+                    <th colspan="4">RETIRADOS</th>
+                    <th colspan="4">EFECTIVOS</th>
+                    <th colspan="4">APROBADOS</th>
+                    <th colspan="4">REPROBADOS</th>
+                  </tr>
+                  <tr>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                    <th>F</th><th>V</th><th>T</th><th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="stats-label">INICIO DE GESTIÓN</td>
+                    <td class="cell-empty" data-field="m_ini_f"></td><td class="cell-empty" data-field="m_ini_v"></td><td class="cell-empty" data-field="m_ini_t">15</td><td class="cell-empty" data-field="m_ini_p"></td>
+                    <td class="cell-empty" data-field="m_ini_itf"></td><td class="cell-empty" data-field="m_ini_itv"></td><td class="cell-empty" data-field="m_ini_itt"></td><td class="cell-empty" data-field="m_ini_itp"></td>
+                    <td class="cell-empty" data-field="m_ini_rtf"></td><td class="cell-empty" data-field="m_ini_rtv"></td><td class="cell-empty" data-field="m_ini_rtt"></td><td class="cell-empty" data-field="m_ini_rtp"></td>
+                    <td class="cell-empty" data-field="m_ini_rf"></td><td class="cell-empty" data-field="m_ini_rv"></td><td class="cell-empty" data-field="m_ini_rt">15</td><td class="cell-empty" data-field="m_ini_rp"></td>
+                    <td class="cell-empty" data-field="m_ini_ef"></td><td class="cell-empty" data-field="m_ini_ev"></td><td class="cell-empty" data-field="m_ini_et">30</td><td class="cell-empty" data-field="m_ini_ep"></td>
+                    <td class="cell-empty" data-field="m_ini_af"></td><td class="cell-empty" data-field="m_ini_av"></td><td class="cell-empty" data-field="m_ini_at"></td><td class="cell-empty" data-field="m_ini_ap"></td>
+                    <td class="cell-empty" data-field="m_ini_rpf"></td><td class="cell-empty" data-field="m_ini_rpv"></td><td class="cell-empty" data-field="m_ini_rpt"></td><td class="cell-empty" data-field="m_ini_rpp"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-label">1er. TRIMESTRE</td>
+                    <td class="cell-empty" data-field="m_1t_f"></td><td class="cell-empty" data-field="m_1t_v"></td><td class="cell-empty" data-field="m_1t_t"></td><td class="cell-empty" data-field="m_1t_p"></td>
+                    <td class="cell-empty" data-field="m_1t_itf"></td><td class="cell-empty" data-field="m_1t_itv"></td><td class="cell-empty" data-field="m_1t_itt"></td><td class="cell-empty" data-field="m_1t_itp"></td>
+                    <td class="cell-empty" data-field="m_1t_rtf"></td><td class="cell-empty" data-field="m_1t_rtv"></td><td class="cell-empty" data-field="m_1t_rtt"></td><td class="cell-empty" data-field="m_1t_rtp"></td>
+                    <td class="cell-empty" data-field="m_1t_rf"></td><td class="cell-empty" data-field="m_1t_rv"></td><td class="cell-empty" data-field="m_1t_rt"></td><td class="cell-empty" data-field="m_1t_rp"></td>
+                    <td class="cell-empty" data-field="m_1t_ef"></td><td class="cell-empty" data-field="m_1t_ev"></td><td class="cell-empty" data-field="m_1t_et"></td><td class="cell-empty" data-field="m_1t_ep"></td>
+                    <td class="cell-empty" data-field="m_1t_af"></td><td class="cell-empty" data-field="m_1t_av"></td><td class="cell-empty" data-field="m_1t_at"></td><td class="cell-empty" data-field="m_1t_ap"></td>
+                    <td class="cell-empty" data-field="m_1t_rpf"></td><td class="cell-empty" data-field="m_1t_rpv"></td><td class="cell-empty" data-field="m_1t_rpt"></td><td class="cell-empty" data-field="m_1t_rpp"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-label">2do. TRIMESTRE</td>
+                    <td class="cell-empty" data-field="m_2t_f"></td><td class="cell-empty" data-field="m_2t_v"></td><td class="cell-empty" data-field="m_2t_t"></td><td class="cell-empty" data-field="m_2t_p"></td>
+                    <td class="cell-empty" data-field="m_2t_itf"></td><td class="cell-empty" data-field="m_2t_itv"></td><td class="cell-empty" data-field="m_2t_itt"></td><td class="cell-empty" data-field="m_2t_itp"></td>
+                    <td class="cell-empty" data-field="m_2t_rtf"></td><td class="cell-empty" data-field="m_2t_rtv"></td><td class="cell-empty" data-field="m_2t_rtt"></td><td class="cell-empty" data-field="m_2t_rtp"></td>
+                    <td class="cell-empty" data-field="m_2t_rf"></td><td class="cell-empty" data-field="m_2t_rv"></td><td class="cell-empty" data-field="m_2t_rt"></td><td class="cell-empty" data-field="m_2t_rp"></td>
+                    <td class="cell-empty" data-field="m_2t_ef"></td><td class="cell-empty" data-field="m_2t_ev"></td><td class="cell-empty" data-field="m_2t_et"></td><td class="cell-empty" data-field="m_2t_ep"></td>
+                    <td class="cell-empty" data-field="m_2t_af"></td><td class="cell-empty" data-field="m_2t_av"></td><td class="cell-empty" data-field="m_2t_at"></td><td class="cell-empty" data-field="m_2t_ap"></td>
+                    <td class="cell-empty" data-field="m_2t_rpf"></td><td class="cell-empty" data-field="m_2t_rpv"></td><td class="cell-empty" data-field="m_2t_rpt"></td><td class="cell-empty" data-field="m_2t_rpp"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-label">3er. TRIMESTRE</td>
+                    <td class="cell-empty" data-field="m_3t_f"></td><td class="cell-empty" data-field="m_3t_v"></td><td class="cell-empty" data-field="m_3t_t"></td><td class="cell-empty" data-field="m_3t_p"></td>
+                    <td class="cell-empty" data-field="m_3t_itf"></td><td class="cell-empty" data-field="m_3t_itv"></td><td class="cell-empty" data-field="m_3t_itt"></td><td class="cell-empty" data-field="m_3t_itp"></td>
+                    <td class="cell-empty" data-field="m_3t_rtf"></td><td class="cell-empty" data-field="m_3t_rtv"></td><td class="cell-empty" data-field="m_3t_rtt"></td><td class="cell-empty" data-field="m_3t_rtp"></td>
+                    <td class="cell-empty" data-field="m_3t_rf"></td><td class="cell-empty" data-field="m_3t_rv"></td><td class="cell-empty" data-field="m_3t_rt"></td><td class="cell-empty" data-field="m_3t_rp"></td>
+                    <td class="cell-empty" data-field="m_3t_ef"></td><td class="cell-empty" data-field="m_3t_ev"></td><td class="cell-empty" data-field="m_3t_et"></td><td class="cell-empty" data-field="m_3t_ep"></td>
+                    <td class="cell-empty" data-field="m_3t_af"></td><td class="cell-empty" data-field="m_3t_av"></td><td class="cell-empty" data-field="m_3t_at"></td><td class="cell-empty" data-field="m_3t_ap"></td>
+                    <td class="cell-empty" data-field="m_3t_rpf"></td><td class="cell-empty" data-field="m_3t_rpv"></td><td class="cell-empty" data-field="m_3t_rpt"></td><td class="cell-empty" data-field="m_3t_rpp"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-label">FIN DE GESTIÓN</td>
+                    <td class="cell-empty" data-field="m_fin_f"></td><td class="cell-empty" data-field="m_fin_v"></td><td class="cell-empty" data-field="m_fin_t"></td><td class="cell-empty" data-field="m_fin_p"></td>
+                    <td class="cell-empty" data-field="m_fin_itf"></td><td class="cell-empty" data-field="m_fin_itv"></td><td class="cell-empty" data-field="m_fin_itt"></td><td class="cell-empty" data-field="m_fin_itp"></td>
+                    <td class="cell-empty" data-field="m_fin_rtf"></td><td class="cell-empty" data-field="m_fin_rtv"></td><td class="cell-empty" data-field="m_fin_rtt"></td><td class="cell-empty" data-field="m_fin_rtp"></td>
+                    <td class="cell-empty" data-field="m_fin_rf"></td><td class="cell-empty" data-field="m_fin_rv"></td><td class="cell-empty" data-field="m_fin_rt"></td><td class="cell-empty" data-field="m_fin_rp"></td>
+                    <td class="cell-empty" data-field="m_fin_ef"></td><td class="cell-empty" data-field="m_fin_ev"></td><td class="cell-empty" data-field="m_fin_et"></td><td class="cell-empty" data-field="m_fin_ep"></td>
+                    <td class="cell-empty" data-field="m_fin_af"></td><td class="cell-empty" data-field="m_fin_av"></td><td class="cell-empty" data-field="m_fin_at"></td><td class="cell-empty" data-field="m_fin_ap"></td>
+                    <td class="cell-empty" data-field="m_fin_rpf"></td><td class="cell-empty" data-field="m_fin_rpv"></td><td class="cell-empty" data-field="m_fin_rpt"></td><td class="cell-empty" data-field="m_fin_rpp"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tabla 2: Avance Programático -->
+          <div class="lux-section">
+            <div class="lux-section__title">B) Avance Programático por Campos y Áreas</div>
+            <div class="stats-table-wrap" style="margin-top: 15px;">
+              <table class="stats-table" id="statsTable2">
+                <thead>
+                  <tr>
+                    <th rowspan="2">CAMPOS</th>
+                    <th rowspan="2">ÁREAS</th>
+                    <th colspan="3">PRIMER TRIMESTRE</th>
+                    <th colspan="3">SEGUNDO TRIMESTRE</th>
+                    <th colspan="3">TERCER TRIMESTRE</th>
+                    <th colspan="3">ANUAL</th>
+                  </tr>
+                  <tr>
+                    <th>Prop.</th><th>Avanz.</th><th>%</th>
+                    <th>Prop.</th><th>Avanz.</th><th>%</th>
+                    <th>Prop.</th><th>Avanz.</th><th>%</th>
+                    <th>Prop.</th><th>Avanz.</th><th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="4" class="stats-label" style="vertical-align: middle;">COMUNIDAD Y SOCIEDAD</td>
+                    <td class="stats-sub-label">Comunicación y Lenguajes</td>
+                    <td class="cell-empty" data-field="p1_c1_tp"></td><td class="cell-empty" data-field="p1_c1_ta"></td><td class="cell-empty" data-field="p1_c1_p"></td>
+                    <td class="cell-empty" data-field="p2_c1_tp"></td><td class="cell-empty" data-field="p2_c1_ta"></td><td class="cell-empty" data-field="p2_c1_p"></td>
+                    <td class="cell-empty" data-field="p3_c1_tp"></td><td class="cell-empty" data-field="p3_c1_ta"></td><td class="cell-empty" data-field="p3_c1_p"></td>
+                    <td class="cell-empty" data-field="pa_c1_tp"></td><td class="cell-empty" data-field="pa_c1_ta"></td><td class="cell-empty" data-field="pa_c1_p"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-sub-label">Ciencias Sociales</td>
+                    <td class="cell-empty" data-field="p1_c2_tp"></td><td class="cell-empty" data-field="p1_c2_ta"></td><td class="cell-empty" data-field="p1_c2_p"></td>
+                    <td class="cell-empty" data-field="p2_c2_tp"></td><td class="cell-empty" data-field="p2_c2_ta"></td><td class="cell-empty" data-field="p2_c2_p"></td>
+                    <td class="cell-empty" data-field="p3_c2_tp"></td><td class="cell-empty" data-field="p3_c2_ta"></td><td class="cell-empty" data-field="p3_c2_p"></td>
+                    <td class="cell-empty" data-field="pa_c2_tp"></td><td class="cell-empty" data-field="pa_c2_ta"></td><td class="cell-empty" data-field="pa_c2_p"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-sub-label">Artes Plásticas y Visuales</td>
+                    <td class="cell-empty" data-field="p1_c3_tp"></td><td class="cell-empty" data-field="p1_c3_ta"></td><td class="cell-empty" data-field="p1_c3_p"></td>
+                    <td class="cell-empty" data-field="p2_c3_tp"></td><td class="cell-empty" data-field="p2_c3_ta"></td><td class="cell-empty" data-field="p2_c3_p"></td>
+                    <td class="cell-empty" data-field="p3_c3_tp"></td><td class="cell-empty" data-field="p3_c3_ta"></td><td class="cell-empty" data-field="p3_c3_p"></td>
+                    <td class="cell-empty" data-field="pa_c3_tp"></td><td class="cell-empty" data-field="pa_c3_ta"></td><td class="cell-empty" data-field="pa_c3_p"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-sub-label">Educación Musical</td>
+                    <td class="cell-empty" data-field="p1_c4_tp"></td><td class="cell-empty" data-field="p1_c4_ta"></td><td class="cell-empty" data-field="p1_c4_p"></td>
+                    <td class="cell-empty" data-field="p2_c4_tp"></td><td class="cell-empty" data-field="p2_c4_ta"></td><td class="cell-empty" data-field="p2_c4_p"></td>
+                    <td class="cell-empty" data-field="p3_c4_tp"></td><td class="cell-empty" data-field="p3_c4_ta"></td><td class="cell-empty" data-field="p3_c4_p"></td>
+                    <td class="cell-empty" data-field="pa_c4_tp"></td><td class="cell-empty" data-field="pa_c4_ta"></td><td class="cell-empty" data-field="pa_c4_p"></td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" class="stats-label" style="vertical-align: middle;">CIENCIA TECNOLOGÍA Y PRODUCCIÓN</td>
+                    <td class="stats-sub-label">Matemática</td>
+                    <td class="cell-empty" data-field="p1_c5_tp"></td><td class="cell-empty" data-field="p1_c5_ta"></td><td class="cell-empty" data-field="p1_c5_p"></td>
+                    <td class="cell-empty" data-field="p2_c5_tp"></td><td class="cell-empty" data-field="p2_c5_ta"></td><td class="cell-empty" data-field="p2_c5_p"></td>
+                    <td class="cell-empty" data-field="p3_c5_tp"></td><td class="cell-empty" data-field="p3_c5_ta"></td><td class="cell-empty" data-field="p3_c5_p"></td>
+                    <td class="cell-empty" data-field="pa_c5_tp"></td><td class="cell-empty" data-field="pa_c5_ta"></td><td class="cell-empty" data-field="pa_c5_p"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-sub-label">Técnica Tecnológica</td>
+                    <td class="cell-empty" data-field="p1_c6_tp"></td><td class="cell-empty" data-field="p1_c6_ta"></td><td class="cell-empty" data-field="p1_c6_p"></td>
+                    <td class="cell-empty" data-field="p2_c6_tp"></td><td class="cell-empty" data-field="p2_c6_ta"></td><td class="cell-empty" data-field="p2_c6_p"></td>
+                    <td class="cell-empty" data-field="p3_c6_tp"></td><td class="cell-empty" data-field="p3_c6_ta"></td><td class="cell-empty" data-field="p3_c6_p"></td>
+                    <td class="cell-empty" data-field="pa_c6_tp"></td><td class="cell-empty" data-field="pa_c6_ta"></td><td class="cell-empty" data-field="pa_c6_p"></td>
+                  </tr>
+                  <tr>
+                    <td class="stats-label" style="vertical-align: middle;">VIDA TIERRA TERRITORIO</td>
+                    <td class="stats-sub-label">Ciencias Naturales</td>
+                    <td class="cell-empty" data-field="p1_c7_tp"></td><td class="cell-empty" data-field="p1_c7_ta"></td><td class="cell-empty" data-field="p1_c7_p"></td>
+                    <td class="cell-empty" data-field="p2_c7_tp"></td><td class="cell-empty" data-field="p2_c7_ta"></td><td class="cell-empty" data-field="p2_c7_p"></td>
+                    <td class="cell-empty" data-field="p3_c7_tp"></td><td class="cell-empty" data-field="p3_c7_ta"></td><td class="cell-empty" data-field="p3_c7_p"></td>
+                    <td class="cell-empty" data-field="pa_c7_tp"></td><td class="cell-empty" data-field="pa_c7_ta"></td><td class="cell-empty" data-field="pa_c7_p"></td>
+                  </tr>
+                  <tr class="stats-total">
+                    <td colspan="2" style="text-align: right; padding-right: 15px;">TOTAL</td>
+                    <td class="cell-empty" data-field="tot_1t_tp"></td><td class="cell-empty" data-field="tot_1t_ta"></td><td class="cell-empty" data-field="tot_1t_p"></td>
+                    <td class="cell-empty" data-field="tot_2t_tp"></td><td class="cell-empty" data-field="tot_2t_ta"></td><td class="cell-empty" data-field="tot_2t_p"></td>
+                    <td class="cell-empty" data-field="tot_3t_tp"></td><td class="cell-empty" data-field="tot_3t_ta"></td><td class="cell-empty" data-field="tot_3t_p"></td>
+                    <td class="cell-empty" data-field="tot_a_tp"></td><td class="cell-empty" data-field="tot_a_ta"></td><td class="cell-empty" data-field="tot_a_p"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tabla 3: Aprovechamiento -->
+          <div class="lux-section">
+            <div class="lux-section__title">C) Cuadro de Aprovechamiento Trimestral y Anual</div>
+            <div class="stats-table-wrap" style="margin-top: 15px;">
+              <table class="stats-table" id="statsTable3">
+                <thead>
+                  <tr>
+                    <th rowspan="2" style="width: 50px;">N°</th>
+                    <th rowspan="2">ÁREAS</th>
+                    <th colspan="2">1ER TRIMESTRE</th>
+                    <th colspan="2">2DO TRIMESTRE</th>
+                    <th colspan="2">3ER TRIMESTRE</th>
+                    <th colspan="2">ANUAL</th>
+                  </tr>
+                  <tr>
+                    <th>Prom.</th><th>%</th>
+                    <th>Prom.</th><th>%</th>
+                    <th>Prom.</th><th>%</th>
+                    <th>Prom.</th><th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="cell-num">1</td><td class="stats-sub-label">Comunicación y Lenguaje</td><td class="cell-empty" data-field="a1_p1"></td><td class="cell-empty" data-field="a1_p1_p"></td><td class="cell-empty" data-field="a1_p2"></td><td class="cell-empty" data-field="a1_p2_p"></td><td class="cell-empty" data-field="a1_p3"></td><td class="cell-empty" data-field="a1_p3_p"></td><td class="cell-empty" data-field="a1_pa"></td><td class="cell-empty" data-field="a1_pa_p"></td></tr>
+                  <tr><td class="cell-num">2</td><td class="stats-sub-label">Ciencias Sociales</td><td class="cell-empty" data-field="a2_p1"></td><td class="cell-empty" data-field="a2_p1_p"></td><td class="cell-empty" data-field="a2_p2"></td><td class="cell-empty" data-field="a2_p2_p"></td><td class="cell-empty" data-field="a2_p3"></td><td class="cell-empty" data-field="a2_p3_p"></td><td class="cell-empty" data-field="a2_pa"></td><td class="cell-empty" data-field="a2_pa_p"></td></tr>
+                  <tr><td class="cell-num">3</td><td class="stats-sub-label">Educación Física y Deportes</td><td class="cell-empty" data-field="a3_p1"></td><td class="cell-empty" data-field="a3_p1_p"></td><td class="cell-empty" data-field="a3_p2"></td><td class="cell-empty" data-field="a3_p2_p"></td><td class="cell-empty" data-field="a3_p3"></td><td class="cell-empty" data-field="a3_p3_p"></td><td class="cell-empty" data-field="a3_pa"></td><td class="cell-empty" data-field="a3_pa_p"></td></tr>
+                  <tr><td class="cell-num">4</td><td class="stats-sub-label">Educación Musical</td><td class="cell-empty" data-field="a4_p1"></td><td class="cell-empty" data-field="a4_p1_p"></td><td class="cell-empty" data-field="a4_p2"></td><td class="cell-empty" data-field="a4_p2_p"></td><td class="cell-empty" data-field="a4_p3"></td><td class="cell-empty" data-field="a4_p3_p"></td><td class="cell-empty" data-field="a4_pa"></td><td class="cell-empty" data-field="a4_pa_p"></td></tr>
+                  <tr><td class="cell-num">5</td><td class="stats-sub-label">Artes Plásticas y Visuales</td><td class="cell-empty" data-field="a5_p1"></td><td class="cell-empty" data-field="a5_p1_p"></td><td class="cell-empty" data-field="a5_p2"></td><td class="cell-empty" data-field="a5_p2_p"></td><td class="cell-empty" data-field="a5_p3"></td><td class="cell-empty" data-field="a5_p3_p"></td><td class="cell-empty" data-field="a5_pa"></td><td class="cell-empty" data-field="a5_pa_p"></td></tr>
+                  <tr><td class="cell-num">6</td><td class="stats-sub-label">Matemática</td><td class="cell-empty" data-field="a6_p1"></td><td class="cell-empty" data-field="a6_p1_p"></td><td class="cell-empty" data-field="a6_p2"></td><td class="cell-empty" data-field="a6_p2_p"></td><td class="cell-empty" data-field="a6_p3"></td><td class="cell-empty" data-field="a6_p3_p"></td><td class="cell-empty" data-field="a6_pa"></td><td class="cell-empty" data-field="a6_pa_p"></td></tr>
+                  <tr><td class="cell-num">7</td><td class="stats-sub-label">Técnica Tecnológica</td><td class="cell-empty" data-field="a7_p1"></td><td class="cell-empty" data-field="a7_p1_p"></td><td class="cell-empty" data-field="a7_p2"></td><td class="cell-empty" data-field="a7_p2_p"></td><td class="cell-empty" data-field="a7_p3"></td><td class="cell-empty" data-field="a7_p3_p"></td><td class="cell-empty" data-field="a7_pa"></td><td class="cell-empty" data-field="a7_pa_p"></td></tr>
+                  <tr><td class="cell-num">8</td><td class="stats-sub-label">Ciencias Naturales</td><td class="cell-empty" data-field="a8_p1"></td><td class="cell-empty" data-field="a8_p1_p"></td><td class="cell-empty" data-field="a8_p2"></td><td class="cell-empty" data-field="a8_p2_p"></td><td class="cell-empty" data-field="a8_p3"></td><td class="cell-empty" data-field="a8_p3_p"></td><td class="cell-empty" data-field="a8_pa"></td><td class="cell-empty" data-field="a8_pa_p"></td></tr>
+                  <tr><td class="cell-num">9</td><td class="stats-sub-label">Valores Espiritualidades y Religiones</td><td class="cell-empty" data-field="a9_p1"></td><td class="cell-empty" data-field="a9_p1_p"></td><td class="cell-empty" data-field="a9_p2"></td><td class="cell-empty" data-field="a9_p2_p"></td><td class="cell-empty" data-field="a9_p3"></td><td class="cell-empty" data-field="a9_p3_p"></td><td class="cell-empty" data-field="a9_pa"></td><td class="cell-empty" data-field="a9_pa_p"></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildEstadisticaActions() {
+        return `
+          <div class="action-buttons-row">
+            <button type="button" class="action-btn action-btn--edit" id="btnEditEstadistica">
+              <span class="action-btn__icon">✎</span> Editar
+            </button>
+            <button type="button" class="action-btn action-btn--save" id="btnSaveEstadistica" disabled>
+              <span class="action-btn__icon">💾</span> Guardar Datos
+            </button>
+          </div>
+        `;
+      }
+
+      function buildEstadisticaView() {
+        return {
+          title: 'Cuadro Estadístico General',
+          subtitle: 'Matrícula, Avance Programático y Aprovechamiento',
+          body: `
+            <div class="filiacion-wrap">
+              ${buildEstadisticaHeader()}
+              ${buildEstadisticaActions()}
+              ${buildEstadisticaTables()}
+            </div>
+          `,
+        };
+      }
+
+      function enableEstadisticaEditMode() {
+        const tables = document.querySelectorAll('.stats-table');
+        if (!tables.length) return;
+
+        tables.forEach(table => {
+          const cells = table.querySelectorAll('tbody td.cell-empty');
+          cells.forEach(td => {
+            const field = td.dataset.field;
+            const currentValue = td.textContent.trim();
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'stats-input';
+            input.value = currentValue;
+            input.dataset.field = field;
+            
+            td.textContent = '';
+            td.appendChild(input);
+            td.classList.add('is-editing');
+          });
+        });
+
+        document.getElementById('btnEditEstadistica').disabled = true;
+        document.getElementById('btnSaveEstadistica').disabled = false;
+        document.querySelector('.stats-input')?.focus();
+        showToast('Modo edición activado. Complete los datos estadísticos.', 'info');
+      }
+
+      function saveEstadisticaEditMode() {
+        const tables = document.querySelectorAll('.stats-table');
+        if (!tables.length) return;
+
+        tables.forEach(table => {
+          const inputs = table.querySelectorAll('.stats-input');
+          inputs.forEach(input => {
+            const td = input.closest('td');
+            const value = input.value.trim();
+
+            td.textContent = value;
+            td.classList.remove('is-editing');
+            if (value === '') td.classList.add('cell-empty');
+            else td.classList.remove('cell-empty');
+          });
+        });
+
+        document.getElementById('btnEditEstadistica').disabled = false;
+        document.getElementById('btnSaveEstadistica').disabled = true;
+        showToast('¡Datos estadísticos guardados con éxito!', 'success');
+      }
+
+      function bindEstadisticaEvents() {
+        document.getElementById('btnEditEstadistica')?.addEventListener('click', enableEstadisticaEditMode);
+        document.getElementById('btnSaveEstadistica')?.addEventListener('click', saveEstadisticaEditMode);
+      }
+
+      /* ============================================================
+         FUNCIONES RESTANTES (HORARIO, TRIMESTRES, ETC.)
+         ============================================================ */
+      let toastTimer = null;
+      function showToast(message, type = 'success') {
+        toastMessage.textContent = message;
+        toast.style.background = type === 'success' ? 'var(--red)' : 'var(--blue-deep)';
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+      }
+
+      const sectionBuilders = {
+        'caratula': buildCaratulaView,
+        'filiacion': buildFiliacionView,
+        'ppff': buildPPFFView,
+        'estadistica': buildEstadisticaView,
+
+        'horario': () => ({
+          title: 'Horario Semanal',
+          subtitle: 'Grilla de clases · Turno mañana',
+          body: buildSchedule()
+        }),
+
+        'trim1': () => buildTrimestre('1er Trimestre'),
+        'trim2': () => buildTrimestre('2do Trimestre'),
+        'trim3': () => buildTrimestre('3er Trimestre'),
+
+        'anual': () => ({
+          title: 'Centralizador Anual',
+          subtitle: 'Promedio general por áreas',
+          body: `
+            ${buildStats([
+              { value: '87.5', label: 'Promedio General' },
+              { value: '92', label: 'Nota Máxima' },
+              { value: '78', label: 'Nota Mínima' },
+              { value: '100%', label: 'Aprobados' },
+            ])}
+            ${buildSection('Promedios Anuales por Área',
+              buildTable(
+                ['Área', '1er T.', '2do T.', '3er T.', 'Promedio'],
+                [
+                  ['Lenguaje', '88', '90', '91', '<span class="badge badge--gold">89.7</span>'],
+                  ['Matemática', '85', '87', '88', '<span class="badge badge--gold">86.7</span>'],
+                  ['C. Naturales', '90', '92', '93', '<span class="badge badge--gold">91.7</span>'],
+                  ['C. Sociales', '86', '88', '89', '<span class="badge badge--gold">87.7</span>'],
+                  ['A. Plásticas', '95', '94', '96', '<span class="badge badge--gold">95.0</span>'],
+                  ['Técnica Téc.', '82', '84', '85', '<span class="badge badge--gold">83.7</span>'],
+                  ['E. Musical', '89', '91', '92', '<span class="badge badge--gold">90.7</span>'],
+                ]
+              )
+            )}
+          `
+        }),
+
+        'anual-notas': () => ({
+          title: 'Anual de Notas Detallado',
+          subtitle: 'Registro completo por estudiante',
+          body: buildSection('Notas Finales por Estudiante',
+            buildTable(
+              ['Estudiante', 'Lenguaje', 'Matemática', 'Naturales', 'Sociales', 'Promedio'],
+              [
+                ['García López, Ana', '92', '95', '94', '91', '<span class="badge badge--gold">93.0</span>'],
+                ['Martínez Silva, Carlos', '88', '85', '90', '86', '<span class="badge badge--gold">87.3</span>'],
+                ['Rodríguez Pérez, Lucía', '90', '92', '91', '89', '<span class="badge badge--gold">90.5</span>'],
+                ['Fernández Torres, Diego', '85', '87', '88', '84', '<span class="badge badge--gold">86.0</span>'],
+                ['López Ramírez, Sofía', '91', '89', '93', '90', '<span class="badge badge--gold">90.8</span>'],
+              ]
+            )
+          )
+        }),
+
+        'asist-t1': () => buildAsistencia('Primer Trimestre'),
+        'asist-t2': () => buildAsistencia('Segundo Trimestre'),
+        'asist-t3': () => buildAsistencia('Tercer Trimestre'),
+
+        'eval-comunitaria': () => ({
+          title: 'Evaluación Comunitaria',
+          subtitle: 'Indicadores de participación social',
+          body: `
+            ${buildProgress([
+              { label: 'Participación en actividades', value: 85 },
+              { label: 'Colaboración con la comunidad', value: 72 },
+              { label: 'Asistencia a reuniones', value: 90 },
+              { label: 'Iniciativas propuestas', value: 68 },
+            ])}
+            ${buildSection('Observaciones',
+              buildPlaceholder('✦', 'La evaluación comunitaria refleja un alto compromiso<br>con las actividades sociales del establecimiento.')
+            )}
+          `
+        }),
+
+        'cuadro-honor': () => ({
+          title: 'Cuadro de Honor',
+          subtitle: 'Mejores estudiantes del trimestre',
+          body: buildSection('Ranking de Excelencia',
+            buildTable(
+              ['Pos.', 'Estudiante', 'Promedio', 'Mérito'],
+              [
+                ['1°', 'García López, Ana María', '<span class="badge badge--gold">93.0</span>', 'Excelencia Académica'],
+                ['2°', 'López Ramírez, Sofía', '<span class="badge badge--gold">90.8</span>', 'Mención Honorífica'],
+                ['3°', 'Rodríguez Pérez, Lucía', '<span class="badge badge--gold">90.5</span>', 'Mención Honorífica'],
+                ['4°', 'Martínez Silva, Carlos', '<span class="badge badge--gold">87.3</span>', 'Reconocimiento'],
+                ['5°', 'Fernández Torres, Diego', '<span class="badge badge--gold">86.0</span>', 'Reconocimiento'],
+              ]
+            )
+          )
+        }),
+
+        'boletin': () => ({
+          title: 'Boletín Informativo',
+          subtitle: 'Resumen de calificaciones por estudiante',
+          body: `
+            ${buildForm([
+              { label: 'Seleccionar Estudiante', type: 'select', options: ['García López, Ana', 'Martínez Silva, Carlos', 'Rodríguez Pérez, Lucía'] },
+              { label: 'Trimestre', type: 'select', options: ['1er Trimestre', '2do Trimestre', '3er Trimestre'] },
+            ])}
+            ${buildSection('Vista Previa del Boletín',
+              buildTable(
+                ['Área', 'Nota', 'Observación'],
+                [
+                  ['Lenguaje', '92', '<span class="badge badge--ok">Sobresaliente</span>'],
+                  ['Matemática', '95', '<span class="badge badge--ok">Sobresaliente</span>'],
+                  ['C. Naturales', '94', '<span class="badge badge--ok">Sobresaliente</span>'],
+                  ['C. Sociales', '91', '<span class="badge badge--ok">Sobresaliente</span>'],
+                ]
+              )
+            )}
+          `
+        }),
+
+        'calendario': () => ({
+          title: 'Calendario Escolar',
+          subtitle: 'Eventos y fechas importantes',
+          body: buildSection('Próximos Eventos',
+            buildTable(
+              ['Fecha', 'Evento', 'Tipo'],
+              [
+                ['15 Mar', 'Inicio del 1er Trimestre', '<span class="badge badge--gold">Académico</span>'],
+                ['22 Mar', 'Reunión de Padres', '<span class="badge badge--ok">Social</span>'],
+                ['05 Abr', 'Evaluación Diagnóstica', '<span class="badge badge--warn">Examen</span>'],
+                ['20 Abr', 'Feria de Ciencias', '<span class="badge badge--ok">Evento</span>'],
+                ['10 May', 'Entrega de Boletines', '<span class="badge badge--gold">Académico</span>'],
+              ]
+            )
+          )
+        }),
+
+        'efisica': () => ({
+          title: 'Educación Física',
+          subtitle: 'Centralizador de notas · Área técnica',
+          body: buildSection('Notas por Estudiante',
+            buildTable(
+              ['Estudiante', 'T1', 'T2', 'T3', 'Promedio'],
+              [
+                ['García López, Ana', '95', '94', '96', '<span class="badge badge--gold">95.0</span>'],
+                ['Martínez Silva, Carlos', '88', '90', '91', '<span class="badge badge--gold">89.7</span>'],
+                ['Rodríguez Pérez, Lucía', '92', '93', '94', '<span class="badge badge--gold">93.0</span>'],
+                ['Fernández Torres, Diego', '85', '86', '88', '<span class="badge badge--gold">86.3</span>'],
+              ]
+            )
+          )
+        }),
+
+        'religion': () => ({
+          title: 'Religión',
+          subtitle: 'Centralizador de notas · Área técnica',
+          body: buildSection('Notas por Estudiante',
+            buildTable(
+              ['Estudiante', 'T1', 'T2', 'T3', 'Promedio'],
+              [
+                ['García López, Ana', '90', '92', '93', '<span class="badge badge--gold">91.7</span>'],
+                ['Martínez Silva, Carlos', '86', '88', '89', '<span class="badge badge--gold">87.7</span>'],
+                ['Rodríguez Pérez, Lucía', '91', '92', '94', '<span class="badge badge--gold">92.3</span>'],
+                ['Fernández Torres, Diego', '84', '85', '87', '<span class="badge badge--gold">85.3</span>'],
+              ]
+            )
+          )
+        }),
+      };
+
+      function buildTrimestre(nombre) {
+        return {
+          title: `Centralizador · ${nombre}`,
+          subtitle: `Notas por área · ${nombre}`,
+          body: `
+            ${buildStats([
+              { value: '88.5', label: 'Promedio' },
+              { value: '24', label: 'Estudiantes' },
+              { value: '7', label: 'Áreas' },
+              { value: '100%', label: 'Evaluados' },
+            ])}
+            ${buildSection(`Notas Detalladas · ${nombre}`,
+              buildTable(
+                ['Estudiante', 'Lenguaje', 'Matemática', 'Naturales', 'Sociales', 'Promedio'],
+                [
+                  ['García López, Ana', '92', '95', '94', '91', '<span class="badge badge--gold">93.0</span>'],
+                  ['Martínez Silva, Carlos', '88', '85', '90', '86', '<span class="badge badge--gold">87.3</span>'],
+                  ['Rodríguez Pérez, Lucía', '90', '92', '91', '89', '<span class="badge badge--gold">90.5</span>'],
+                  ['Fernández Torres, Diego', '85', '87', '88', '84', '<span class="badge badge--gold">86.0</span>'],
+                  ['López Ramírez, Sofía', '91', '89', '93', '90', '<span class="badge badge--gold">90.8</span>'],
+                ]
+              )
+            )}
+          `
+        };
+      }
+
+      function buildAsistencia(trimestre) {
+        return {
+          title: `Asistencia · ${trimestre}`,
+          subtitle: 'Registro de presentismo estudiantil',
+          body: `
+            ${buildStats([
+              { value: '96%', label: 'Asistencia' },
+              { value: '4%', label: 'Ausencias' },
+              { value: '2', label: 'Tardanzas' },
+              { value: '24', label: 'Estudiantes' },
+            ])}
+            ${buildSection('Detalle de Asistencia',
+              buildTable(
+                ['Estudiante', 'Presentes', 'Ausentes', 'Tardanzas', '% Asist.'],
+                [
+                  ['García López, Ana', '58', '2', '0', '<span class="badge badge--ok">96.7%</span>'],
+                  ['Martínez Silva, Carlos', '55', '4', '1', '<span class="badge badge--warn">91.7%</span>'],
+                  ['Rodríguez Pérez, Lucía', '60', '0', '0', '<span class="badge badge--ok">100%</span>'],
+                  ['Fernández Torres, Diego', '57', '3', '0', '<span class="badge badge--ok">95.0%</span>'],
+                ]
+              )
+            )}
+          `
+        };
+      }
+
+      ['t1', 't2', 't3'].forEach((tri, idx) => {
+        const nombres = ['1er Trimestre', '2do Trimestre', '3er Trimestre'];
+        const areas = {
+          'lenguaje': 'Lenguaje',
+          'matematica': 'Matemática',
+          'naturales': 'C. Naturales',
+          'sociales': 'C. Sociales',
+          'plasticas': 'A. Plásticas',
+          'tecnica': 'Técnica Téc.',
+          'musical': 'E. Musical',
+        };
+
+        Object.entries(areas).forEach(([key, label]) => {
+          const sectionKey = `${tri}-${key}`;
+          sectionBuilders[sectionKey] = () => ({
+            title: `${label} · ${nombres[idx]}`,
+            subtitle: `Notas del área · ${nombres[idx]}`,
+            body: `
+              ${buildStats([
+                { value: '91.2', label: 'Promedio' },
+                { value: '24', label: 'Estudiantes' },
+                { value: '100%', label: 'Evaluados' },
+                { value: 'A', label: 'Rendimiento' },
+              ])}
+              ${buildSection(`Listado de Notas · ${label}`,
+                buildTable(
+                  ['Estudiante', 'Nota 1', 'Nota 2', 'Nota 3', 'Promedio'],
+                  [
+                    ['García López, Ana', '92', '94', '95', '<span class="badge badge--gold">93.7</span>'],
+                    ['Martínez Silva, Carlos', '88', '89', '90', '<span class="badge badge--gold">89.0</span>'],
+                    ['Rodríguez Pérez, Lucía', '90', '91', '92', '<span class="badge badge--gold">91.0</span>'],
+                    ['Fernández Torres, Diego', '85', '86', '87', '<span class="badge badge--gold">86.0</span>'],
+                  ]
+                )
+              )}
+            `
+          });
+        });
+      });
+
+      function loadSection(sectionId, buttonEl) {
+        splitContainer.classList.add('is-active');
+
+        allButtons.forEach(btn => btn.classList.remove('is-selected'));
+        if (buttonEl) buttonEl.classList.add('is-selected');
+
+        const builder = sectionBuilders[sectionId];
+        const data = builder
+          ? builder()
+          : {
+              title: 'Sección',
+              subtitle: 'Contenido no disponible',
+              body: buildPlaceholder('✦', 'Esta sección aún no tiene contenido asignado.')
+            };
+
+        welcomeState.style.display = 'none';
+
+        const existingBody = contentPanel.querySelector('.content-panel__body');
+        if (existingBody) existingBody.remove();
+
+        const newBody = document.createElement('div');
+        newBody.className = 'content-panel__body';
+        newBody.innerHTML = `
+          <header class="content-panel__header">
+            <h2 class="content-panel__title">${data.title}</h2>
+            <p class="content-panel__subtitle">${data.subtitle}</p>
+          </header>
+          ${data.body}
+        `;
+
+        contentPanel.appendChild(newBody);
+        contentPanel.classList.add('is-visible');
+        contentPanel.scrollTop = 0;
+
+        if (sectionId === 'caratula')  bindCaratulaEvents();
+        if (sectionId === 'filiacion') bindFiliacionEvents();
+        if (sectionId === 'ppff')      bindPPFFEvents();
+        if (sectionId === 'estadistica') bindEstadisticaEvents();
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn[data-section]');
+        if (!btn) return;
+        loadSection(btn.dataset.section, btn);
+      });
+
+    })();
+  </script>
+
+</body>
+</html>
